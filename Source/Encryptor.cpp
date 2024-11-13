@@ -3,8 +3,6 @@
 
 std::string Encryptor::encrypt(std::string message) 
 {
-    //return Caesar_cipher(message, 2);
-
     std::string encrypted_message = message;
     for (const auto& cipher : ciphers)
     {
@@ -70,7 +68,7 @@ std::string Encryptor::Rövarspråk(std::string_view message) noexcept
 
 bool Encryptor::is_consonant(char c) noexcept
 {
-    const char lower = static_cast<char>(std::tolower(c)); //TODO: problem
+    const char lower = narrow_cast<char>(std::tolower(c)); //TODO: problem
     return (lower >= 'a' && lower <= 'z') && !(lower == 'a' || lower == 'e' || lower == 'i' || lower == 'o' || lower == 'u');
 }
 

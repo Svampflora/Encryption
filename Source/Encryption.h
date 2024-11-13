@@ -2,16 +2,15 @@
 #include "State.h"
 #include "Encryptor.h"
 
-
 class Encryption : public State
 {
-	Encryptor encryptor{};
+	Encryptor encryptor;
 	Text_box text_box;
-
+	Menu menu;
 
 public:
 	
-	Encryption() noexcept;
+	Encryption();
 	std::unique_ptr<State> Update() override;
 	void Render() const noexcept override;
 };

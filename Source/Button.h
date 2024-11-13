@@ -4,51 +4,62 @@
 #pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
 #include "raylib.h"
 #pragma warning(pop)
+
 #include <string>
 #include "Utilities.h"
+#include <string_view>
+#include <vector>
+#include <functional>
 
 
 class Button
 {
-	std::string text;
+	using Action = std::function<void()>;
+	Action action;
+	std::string label;
 	Vector2 position;
 	float width;
 	float height;
 
 public:
 
-	Button(const std::string& _text, const Vector2& _position, const float& _width, const float& _height) :
-		text(_text),
-		position(_position),
-		width(_width),
-		height(_height)
+	Button(const std::string& _label, const Rectangle& _rectangle, Action _action) :
+		action(_action),
+		label(_label),
+		position({ _rectangle.x, _rectangle.y }),
+		width(_rectangle.width),
+		height(_rectangle.height)
 	{}
 
-	bool is_clicked() const noexcept
+	void click() const
 	{
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && is_hovering())
 		{
-			return true;
+			if (action)
+			{
+				action();
+			};
 		}
-		return false;
 	}
 
-	void draw()
+	void draw(const Font& _font) const noexcept
 	{
 		if (is_hovering())
 		{
-			DrawRectanglePro(hit_box(), { 0.0f,0.0f }, 0.0f, GRAY);
+			DrawRectanglePro(hit_box(), { 0.0f,0.0f }, 0.0f, PINK);
+			DrawTextPro(_font, label.data(), position, { 0.0f, 0.0f }, 0.0f, half_of(height), 1, WHITE);
 		}
 		else
 		{
 			DrawRectanglePro(hit_box(), { 0.0f,0.0f }, 0.0f, GRAY);
+			DrawTextPro(_font, label.data(), position, { 0.0f, 0.0f }, 0.0f, half_of(height), 1, PINK);
 		}
 	}
 
 private:
 	Rectangle hit_box() const noexcept
 	{
-		return { position.x - half_of(width), position.y - half_of(height), width, height };
+		return { position.x, position.y, width, height };
 	}
 
 	bool is_hovering() const noexcept
@@ -63,16 +74,29 @@ class Menu
 	std::vector<Button> buttons;
 
 public:
-	Menu(const Font& _font, const Rectangle& _rectangle) :
+	Menu(const Font& _font) noexcept:
 		font(_font)
 	{
 	}
 
-	void draw()
+	void update()
 	{
-		for (Button& button : buttons)
+		for (const Button& button : buttons)
 		{
-			button.draw();
+			button.click();
+		}
+	}
+
+	void add_button(const Button& _button)
+	{
+		buttons.push_back(_button);
+	}
+
+	void draw() const noexcept
+	{
+		for (const Button& button : buttons)
+		{
+			button.draw(font);
 		}
 	}
 };

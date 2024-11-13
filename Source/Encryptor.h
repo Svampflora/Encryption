@@ -1,15 +1,10 @@
 #pragma once
-
-#include <string_view>
-#include <vector>
-#include <functional>
 #include "Text_box.h"
-#include "Utilities.h"
+
 
 
 class Encryptor
 {
-	std::string text;
 	std::vector<std::function<std::string(const std::string&)>> ciphers;
 
 public:

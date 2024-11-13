@@ -46,3 +46,8 @@ static inline Vector2 middle_of_screen() noexcept
 {
 	return { half_of(GetScreenWidthF()), half_of(GetScreenHeightF()) };
 }
+
+static inline Color transparent_color(const Color& color, const unsigned char& alpha) noexcept
+{
+	return { color.r, color.g, color.b, alpha };
+}

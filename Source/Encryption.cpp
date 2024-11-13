@@ -46,39 +46,46 @@ std::unique_ptr<State> Encryption::Update()
 	{
 		return std::make_unique<End_screen>();
 	}
+	
 
-	if (IsKeyPressed(KEY_ONE))
-	{
-		encryptor.add_cipher([](const std::string& message) noexcept
-			{
-			return Encryptor::Caesar_cipher(message, 3);
-			});
-	}
-
-	if (IsKeyPressed(KEY_TWO))
-	{
-		encryptor.add_cipher([](const std::string& message) noexcept
-			{
-				return Encryptor::Rövarspråk(message);
-			});
-	}
-
-	if (IsKeyPressed(KEY_ENTER))
-	{
-		std::string encrypted_text = encryptor.encrypt(text_box.get_text());
-		text_box.set_text(encrypted_text);
-	}
-
+	menu.update();
 	text_box.write();
 
 	return nullptr;
 }
 
-Encryption::Encryption() noexcept :
-	text_box(LoadFont("assets/pixelmix/pixelmix.TTF"), { middle_of_screen().x - GetScreenWidthF() * 0.1f, middle_of_screen().y }, GetScreenHeightF() * 0.05f )
-{}
+Encryption::Encryption() :
+	encryptor{},
+	text_box(LoadFont("assets/pixelmix/pixelmix.TTF"), { middle_of_screen().x - GetScreenWidthF() * 0.1f, middle_of_screen().y }, GetScreenHeightF() * 0.05f ),
+	menu(LoadFont("assets/pixelmix/pixelmix.TTF"))
+{
+	const Rectangle menu_area{ GetScreenWidthF() * 0.7f, GetScreenHeightF() * 0.1f, GetScreenWidthF() * 0.2f, GetScreenHeightF() * 0.8f };
+	const float button_height = menu_area.height / 8;
+
+	Rectangle button_area{ menu_area.x, menu_area.y, menu_area.width, button_height };
+	Button button_1("Caesar Cipher (Shift 3)", button_area, [this]() {
+		this->encryptor.add_cipher([](const std::string& message) noexcept {
+			return Encryptor::Caesar_cipher(message, 3);
+			});
+		});
+	menu.add_button(button_1);
+
+	button_area.y += button_height;
+	Button button_2("Rövarspråk", button_area, [this]() {
+		this->encryptor.add_cipher(Encryptor::Rövarspråk);
+		});
+	menu.add_button(button_2);
+
+	button_area.y += button_height;
+	Button button_3("Encrypt", button_area, [this]() {
+		this->text_box.set_text(this->encryptor.encrypt(this->text_box.get_text()));
+		});
+	menu.add_button(button_3);
+
+}
 
 void Encryption::Render() const noexcept
 {
 	text_box.draw();
+	menu.draw();
 }
