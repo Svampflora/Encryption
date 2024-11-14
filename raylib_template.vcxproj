@@ -165,7 +165,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Endscreen.cpp" />
+    <ClCompile Include="Source\Decryption.cpp" />
+    <ClCompile Include="Source\Decryptor.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Encryption.cpp" />
     <ClCompile Include="Source\main.cpp" />
@@ -174,8 +175,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Button.h" />
+    <ClInclude Include="Source\Decryptor.h" />
     <ClInclude Include="Source\Settings.h" />
-    <ClInclude Include="Source\Endscreen.h" />
+    <ClInclude Include="Source\Decryption.h" />
     <ClInclude Include="Source\Game.h" />
     <ClInclude Include="Source\Encryption.h" />
     <ClInclude Include="Source\Startscreen.h" />

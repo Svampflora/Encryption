@@ -1,17 +1,12 @@
 #pragma once
 #include"State.h"
+#include "Decryptor.h"
 #include <vector>
 
 
-struct Score_data
+class Decryption : public State
 {
-	std::string name{ "" };
-	unsigned int score{ 0 };
-};
-
-class End_screen : public State
-{
-
+	Decryptor decryptor;
 public:
 	std::unique_ptr<State> Update() override;
 	void Render() const noexcept override;

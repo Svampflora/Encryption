@@ -1,10 +1,10 @@
-#include "Endscreen.h"
+#include "Decryption.h"
 #include "Startscreen.h"
 #include <fstream>
 #include <iostream>
 
 
-std::unique_ptr<State> End_screen::Update()
+std::unique_ptr<State> Decryption::Update()
 {
 
 
@@ -15,7 +15,7 @@ std::unique_ptr<State> End_screen::Update()
 	return nullptr;
 }
 
-void End_screen::Render() const noexcept
+void Decryption::Render() const noexcept
 {
 
 }

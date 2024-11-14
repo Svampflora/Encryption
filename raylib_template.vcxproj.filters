@@ -27,10 +27,13 @@
     <ClCompile Include="Source\Encryption.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Endscreen.cpp">
+    <ClCompile Include="Source\Decryption.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Startscreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Decryptor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,7 +53,7 @@
     <ClInclude Include="Source\Encryption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Endscreen.h">
+    <ClInclude Include="Source\Decryption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Startscreen.h">
@@ -66,6 +69,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Button.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Decryptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
