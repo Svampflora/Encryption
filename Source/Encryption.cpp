@@ -42,7 +42,7 @@ void remove_if(Container& container, Predicate predicate)
 
 std::unique_ptr<State> Encryption::Update()
 {
-	if (IsKeyReleased(KEY_Q))
+	if (IsKeyReleased(KEY_ENTER))
 	{
 		return std::make_unique<Decryption>();
 	}
@@ -59,7 +59,7 @@ Encryption::Encryption() : //TODO: throws?
 	text_box(LoadFont("assets/pixelmix/pixelmix.TTF"), { middle_of_screen().x - GetScreenWidthF() * 0.1f, middle_of_screen().y }, GetScreenHeightF() * 0.05f ),
 	menu(LoadFont("assets/pixelmix/pixelmix.TTF"))
 {
-	const Rectangle menu_area{ GetScreenWidthF() * 0.7f, GetScreenHeightF() * 0.1f, GetScreenWidthF() * 0.2f, GetScreenHeightF() * 0.8f };
+	const Rectangle menu_area{ GetScreenWidthF() * 0.1f, GetScreenHeightF() * 0.1f, GetScreenWidthF() * 0.2f, GetScreenHeightF() * 0.8f };
 	const float button_height = menu_area.height / 8;
 
 	Rectangle button_area{ menu_area.x, menu_area.y, menu_area.width, button_height };
@@ -71,24 +71,32 @@ Encryption::Encryption() : //TODO: throws?
 	menu.add_button(button_1);
 
 	button_area.y += button_height;
-	Button button_2("Rövarspråk", button_area, [this]() {
-		this->encryptor.add_cipher(Encryptor::Rövarspråk);
+	Button button_2("Multiplicative (Shift 3)", button_area, [this]() {
+		this->encryptor.add_cipher([](const std::string& message) {
+			return Encryptor::multiplicative_cipher(message, 3);
+			});
 		});
 	menu.add_button(button_2);
 
 	button_area.y += button_height;
-	Button button_3("Multiplicative (Shift 3)", button_area, [this]() {
-		this->encryptor.add_cipher([](const std::string& message) noexcept {
-			return Encryptor::multiplicative_cipher(message, 3);
+	Button button_4("Key Word", button_area, [this]() {
+		this->encryptor.add_cipher([](const std::string& message) {
+			return Encryptor::keyword_cipher(message, "key", 'k');
 			});
 		});
-	menu.add_button(button_3);
+	menu.add_button(button_4);
 
 	button_area.y += button_height;
-	Button button_4("Encrypt", button_area, [this]() {
+	Button button_5("Rövarspråk", button_area, [this]() {
+		this->encryptor.add_cipher(Encryptor::rövarspråk);
+		});
+	menu.add_button(button_5);
+
+	button_area.y += button_height;
+	Button button_6("Encrypt", button_area, [this]() {
 		this->text_box.set_text(this->encryptor.encrypt(this->text_box.get_text()));
 		});
-	menu.add_button(button_4);
+	menu.add_button(button_6);
 
 }
 

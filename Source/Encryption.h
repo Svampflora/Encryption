@@ -8,6 +8,7 @@ class Encryption : public State
 	Text_box text_box;
 	Menu menu;
 
+
 public:
 	
 	Encryption();

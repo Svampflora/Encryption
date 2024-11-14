@@ -19,6 +19,16 @@ void Encryptor::add_cipher(std::function<std::string(const std::string&)> cipher
     ciphers.push_back(cipher);
 }
 
+//void Encryptor::set_keyword(const std::string_view _keyword) noexcept
+//{
+//    keyword = _keyword;
+//}
+//
+//void Encryptor::set_key_letter(const char _key_letter) noexcept
+//{
+//    key_letter = _key_letter;
+//}
+
 void Encryptor::draw() const noexcept
 {
 
@@ -50,7 +60,7 @@ std::string Encryptor::addative_cipher(std::string_view message, int steps)  noe
    return encrypted_message;
 }
 
-std::string Encryptor::multiplicative_cipher(std::string_view message, int t) noexcept 
+std::string Encryptor::multiplicative_cipher(std::string_view message, int t) 
 {
 
     if (!is_valid_multiplier(t)) 
@@ -95,10 +105,11 @@ std::string Encryptor::keyword_cipher(std::string_view message, std::string_view
     {
         if (isalpha(ch)) 
         {
-            const char lower_char = std::tolower(ch);
+            const bool upper_case = isupper(ch);
+            const char lower_char = narrow_cast<char>(std::tolower(ch));
             const auto index = alphabet.find(lower_char);
             const char encrypted_char = shifted_alphabet.at(index);
-            encrypted_message += isupper(ch) ? std::toupper(encrypted_char) : encrypted_char;
+            encrypted_message += upper_case ? narrow_cast<char>(std::toupper(encrypted_char)) : encrypted_char;
         }
         else 
         {
@@ -112,7 +123,7 @@ std::string Encryptor::keyword_cipher(std::string_view message, std::string_view
 
 
 
-std::string Encryptor::Rövarspråk(std::string_view message) noexcept
+std::string Encryptor::rövarspråk(std::string_view message) noexcept
 {
    std::string result;
    for (const char c : message)
@@ -137,7 +148,7 @@ std::string Encryptor::unique_letters(const std::string_view& message)
 
     for (char c : message)
     {
-        c = std::tolower(c);
+        c = narrow_cast<char>(std::tolower(c));
         if (result.find(c) == std::string::npos)
         {
             result.push_back(c);
