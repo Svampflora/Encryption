@@ -1,5 +1,5 @@
 #include "Encryption.h"
-#include "Endscreen.h"
+#include "Decryption.h"
 
 
 
@@ -44,7 +44,7 @@ std::unique_ptr<State> Encryption::Update()
 {
 	if (IsKeyReleased(KEY_Q))
 	{
-		return std::make_unique<End_screen>();
+		return std::make_unique<Decryption>();
 	}
 	
 
@@ -54,7 +54,7 @@ std::unique_ptr<State> Encryption::Update()
 	return nullptr;
 }
 
-Encryption::Encryption() :
+Encryption::Encryption() : //TODO: throws?
 	encryptor{},
 	text_box(LoadFont("assets/pixelmix/pixelmix.TTF"), { middle_of_screen().x - GetScreenWidthF() * 0.1f, middle_of_screen().y }, GetScreenHeightF() * 0.05f ),
 	menu(LoadFont("assets/pixelmix/pixelmix.TTF"))
@@ -63,9 +63,9 @@ Encryption::Encryption() :
 	const float button_height = menu_area.height / 8;
 
 	Rectangle button_area{ menu_area.x, menu_area.y, menu_area.width, button_height };
-	Button button_1("Caesar Cipher (Shift 3)", button_area, [this]() {
+	Button button_1("Addative (Shift 3)", button_area, [this]() {
 		this->encryptor.add_cipher([](const std::string& message) noexcept {
-			return Encryptor::Caesar_cipher(message, 3);
+			return Encryptor::addative_cipher(message, 3);
 			});
 		});
 	menu.add_button(button_1);
@@ -77,10 +77,18 @@ Encryption::Encryption() :
 	menu.add_button(button_2);
 
 	button_area.y += button_height;
-	Button button_3("Encrypt", button_area, [this]() {
-		this->text_box.set_text(this->encryptor.encrypt(this->text_box.get_text()));
+	Button button_3("Multiplicative (Shift 3)", button_area, [this]() {
+		this->encryptor.add_cipher([](const std::string& message) noexcept {
+			return Encryptor::multiplicative_cipher(message, 3);
+			});
 		});
 	menu.add_button(button_3);
+
+	button_area.y += button_height;
+	Button button_4("Encrypt", button_area, [this]() {
+		this->text_box.set_text(this->encryptor.encrypt(this->text_box.get_text()));
+		});
+	menu.add_button(button_4);
 
 }
 
