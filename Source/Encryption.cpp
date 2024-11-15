@@ -88,7 +88,9 @@ Encryption::Encryption() : //TODO: throws?
 
 	button_area.y += button_height;
 	Button button_5("Rövarspråk", button_area, [this]() {
-		this->encryptor.add_cipher(Encryptor::rövarspråk);
+		this->encryptor.add_cipher([](const std::string& message) {
+			return Encryptor::rövarspråk(message);
+			});
 		});
 	menu.add_button(button_5);
 

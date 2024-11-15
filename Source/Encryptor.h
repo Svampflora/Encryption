@@ -15,9 +15,9 @@ public:
 
 	static std::string addative_cipher(std::string_view message, int shift, bool decrypt = false) noexcept;
 	static std::string multiplicative_cipher(std::string_view message, int t, bool decrypt = false);
-	static std::string keyword_cipher(std::string_view message, std::string_view key_word, char key_letter);
+	static std::string keyword_cipher(std::string_view message, std::string_view key_word, char key_letter, bool decrypt = false);
 	static std::string vigenere(std::string_view message, std::string_view keyword, bool decrypt = false);
-    static std::string rövarspråk(std::string_view message) noexcept;
+    static std::string rövarspråk(std::string_view message, bool decrypt = false) noexcept;
 
 private:
 	static std::string unique_letters(const std::string_view& message);

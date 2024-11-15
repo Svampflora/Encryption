@@ -24,7 +24,7 @@ void Encryptor::draw() const noexcept
 
 }
 
-std::string Encryptor::addative_cipher(std::string_view message, int steps, bool decrypt = false)  noexcept
+std::string Encryptor::addative_cipher(std::string_view message, int steps, bool decrypt)  noexcept
 {
    std::string encrypted_message;
    encrypted_message.reserve(message.size());
@@ -55,7 +55,7 @@ std::string Encryptor::addative_cipher(std::string_view message, int steps, bool
    return encrypted_message;
 }
 
-std::string Encryptor::multiplicative_cipher(std::string_view message, int t, bool decrypt = false)
+std::string Encryptor::multiplicative_cipher(std::string_view message, int t, bool decrypt)
 {
 
     if (!is_valid_multiplier(t)) 
@@ -93,11 +93,16 @@ std::string Encryptor::multiplicative_cipher(std::string_view message, int t, bo
     return encrypted_message;
 }
 
-std::string Encryptor::keyword_cipher(std::string_view message, std::string_view key_word, char key_letter) 
+std::string Encryptor::keyword_cipher(std::string_view message, std::string_view key_word, char key_letter, bool decrypt)
 {
     const std::string alphabet = "abcdefghijklmnopqrstuvwxyz";
     const std::string::size_type key_pos = alphabet.find(key_letter);
     const std::string unique_key_word = unique_letters(key_word);
+
+    if (key_pos == std::string::npos) 
+    {
+        return "Invalid key letter!";
+    }
 
     std::string shifted_alphabet = unique_letters(unique_key_word + alphabet);
     shifted_alphabet = shifted_alphabet.substr(key_pos) + shifted_alphabet.substr(0, key_pos);
@@ -105,13 +110,19 @@ std::string Encryptor::keyword_cipher(std::string_view message, std::string_view
     std::string encrypted_message;
     for (const char ch : message) 
     {
-        if (isalpha(ch)) 
+        if (isalpha(ch))
         {
-            const bool upper_case = isupper(ch);
-            const char lower_char = narrow_cast<char>(std::tolower(ch));
-            const auto index = alphabet.find(lower_char);
-            const char encrypted_char = shifted_alphabet.at(index);
-            encrypted_message += upper_case ? narrow_cast<char>(std::toupper(encrypted_char)) : encrypted_char;
+            const bool upper_case = std::isupper(ch);
+            const char lower_char = static_cast<char>(std::tolower(ch));
+
+            const std::string& source_alphabet = decrypt ? shifted_alphabet : alphabet;
+            const std::string& target_alphabet = decrypt ? alphabet : shifted_alphabet;
+
+            const auto index = source_alphabet.find(lower_char);
+            if (index != std::string::npos) {
+                const char processed_char = target_alphabet.at(index);
+                encrypted_message += upper_case ? static_cast<char>(std::toupper(processed_char)) : processed_char;
+            }
         }
         else 
         {
@@ -122,7 +133,7 @@ std::string Encryptor::keyword_cipher(std::string_view message, std::string_view
     return encrypted_message;
 }
 
-std::string Encryptor::vigenere(std::string_view message, std::string_view keyword, bool decrypt = false)
+std::string Encryptor::vigenere(std::string_view message, std::string_view keyword, bool decrypt)
 {
     std::string encrypted_message;
     const size_t key_length = keyword.size();
@@ -132,7 +143,7 @@ std::string Encryptor::vigenere(std::string_view message, std::string_view keywo
     {
         if (std::isalpha(ch)) 
         {
-            char key_char = std::tolower(keyword[key_index % key_length]);
+            char key_char = narrow_cast<char>(std::tolower(keyword[key_index % key_length]));
             int shift = key_char - 'a';
 
             if (decrypt)
@@ -161,9 +172,31 @@ std::string Encryptor::vigenere(std::string_view message, std::string_view keywo
 }
 
 
-std::string Encryptor::rövarspråk(std::string_view message) noexcept
+std::string Encryptor::rövarspråk(std::string_view message, bool decrypt) noexcept
 {
+
    std::string result;
+   if(decrypt)
+   {
+       for (auto it = message.begin(); it != message.end(); ++it) {
+           char c = *it;
+           result += c;
+
+           if (is_consonant(c)) 
+           {
+               const auto next_it = std::next(it);
+               const auto next_next_it = std::next(it, 2);
+
+               if (next_it != message.end() && next_next_it != message.end() &&
+                   *next_it == 'o' && *next_next_it == c) 
+               {
+                   it = next_next_it;
+               }
+           }
+       }
+       return result;
+   }
+
    for (const char c : message)
    {
        if (is_consonant(c))
@@ -183,7 +216,6 @@ std::string Encryptor::rövarspråk(std::string_view message) noexcept
 std::string Encryptor::unique_letters(const std::string_view& message)
 {
     std::string result;
-
     for (char c : message)
     {
         c = narrow_cast<char>(std::tolower(c));
