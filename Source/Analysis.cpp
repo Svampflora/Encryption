@@ -1,10 +1,10 @@
-#include "Decryption.h"
+#include "Analysis.h"
 #include "Startscreen.h"
 #include <fstream>
 #include <iostream>
 
 
-std::unique_ptr<State> Decryption::Update()
+std::unique_ptr<State> Analysis::Update()
 {
 
 
@@ -15,7 +15,7 @@ std::unique_ptr<State> Decryption::Update()
 	return nullptr;
 }
 
-void Decryption::Render() const noexcept
+void Analysis::Render() const noexcept
 {
 
 }

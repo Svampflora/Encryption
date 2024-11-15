@@ -1,5 +1,5 @@
 #include "Encryption.h"
-#include "Decryption.h"
+#include "Analysis.h"
 
 
 
@@ -44,7 +44,7 @@ std::unique_ptr<State> Encryption::Update()
 {
 	if (IsKeyReleased(KEY_ENTER))
 	{
-		return std::make_unique<Decryption>();
+		return std::make_unique<Analysis>();
 	}
 	
 

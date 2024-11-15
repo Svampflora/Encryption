@@ -1,12 +1,12 @@
 #pragma once
 #include"State.h"
-#include "Decryptor.h"
+#include "Cipher_analyser.h"
 #include <vector>
 
 
-class Decryption : public State
+class Analysis : public State
 {
-	Decryptor decryptor;
+	Cipher_analyser decryptor;
 public:
 	std::unique_ptr<State> Update() override;
 	void Render() const noexcept override;

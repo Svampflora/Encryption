@@ -1,6 +1,6 @@
-#include "Decryptor.h"
+#include "Cipher_analyser.h"
 
-float Decryptor::letter_frequency(const std::string_view _message, const char _letter) const noexcept
+float Cipher_analyser::letter_frequency(const std::string_view _message, const char _letter) const noexcept
 {
     if (_message.empty()) return 0.0f;
 

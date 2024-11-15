@@ -27,13 +27,13 @@
     <ClCompile Include="Source\Encryption.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Decryption.cpp">
+    <ClCompile Include="Source\Analysis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Startscreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Decryptor.cpp">
+    <ClCompile Include="Source\Cipher_analyser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,7 +53,7 @@
     <ClInclude Include="Source\Encryption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Decryption.h">
+    <ClInclude Include="Source\Analysis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Startscreen.h">
@@ -71,7 +71,7 @@
     <ClInclude Include="Source\Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Decryptor.h">
+    <ClInclude Include="Source\Cipher_analyser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

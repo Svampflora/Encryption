@@ -19,25 +19,20 @@ void Encryptor::add_cipher(std::function<std::string(const std::string&)> cipher
     ciphers.push_back(cipher);
 }
 
-//void Encryptor::set_keyword(const std::string_view _keyword) noexcept
-//{
-//    keyword = _keyword;
-//}
-//
-//void Encryptor::set_key_letter(const char _key_letter) noexcept
-//{
-//    key_letter = _key_letter;
-//}
-
 void Encryptor::draw() const noexcept
 {
 
 }
 
-std::string Encryptor::addative_cipher(std::string_view message, int steps)  noexcept
+std::string Encryptor::addative_cipher(std::string_view message, int steps, bool decrypt = false)  noexcept
 {
    std::string encrypted_message;
    encrypted_message.reserve(message.size());
+
+   if (decrypt)
+   {
+       steps = -steps;
+   }
 
    for (const char c : message)
    {
@@ -60,12 +55,19 @@ std::string Encryptor::addative_cipher(std::string_view message, int steps)  noe
    return encrypted_message;
 }
 
-std::string Encryptor::multiplicative_cipher(std::string_view message, int t) 
+std::string Encryptor::multiplicative_cipher(std::string_view message, int t, bool decrypt = false)
 {
 
     if (!is_valid_multiplier(t)) 
     {
         return "Invalid multiplier!";
+    }
+
+    if (decrypt) {
+        t = modular_inverse(t, 26);
+        if (t == -1) {
+            return "No modular inverse exists for the given multiplier!";
+        }
     }
 
     std::string encrypted_message;
@@ -120,7 +122,43 @@ std::string Encryptor::keyword_cipher(std::string_view message, std::string_view
     return encrypted_message;
 }
 
+std::string Encryptor::vigenere(std::string_view message, std::string_view keyword, bool decrypt = false)
+{
+    std::string encrypted_message;
+    const size_t key_length = keyword.size();
+    size_t key_index = 0;
 
+    for (char ch : message) 
+    {
+        if (std::isalpha(ch)) 
+        {
+            char key_char = std::tolower(keyword[key_index % key_length]);
+            int shift = key_char - 'a';
+
+            if (decrypt)
+            {
+                shift = -shift;
+            }
+
+            if (std::islower(ch)) 
+            {
+                encrypted_message += ((ch - 'a' + shift) % 26) + 'a';
+            }
+            else 
+            {
+                encrypted_message += ((ch - 'A' + shift) % 26) + 'A';
+            }
+
+            ++key_index;
+        }
+        else 
+        {
+            encrypted_message += ch;
+        }
+    }
+
+    return encrypted_message;
+}
 
 
 std::string Encryptor::rövarspråk(std::string_view message) noexcept
@@ -169,3 +207,28 @@ bool Encryptor::is_valid_multiplier(int t)
     return valid_multipliers.count(t) > 0;
 }
 
+int Encryptor::modular_inverse(int t, int mod) noexcept 
+{
+    int a = t, m = mod;
+    int x0 = 0, x1 = 1;
+
+    while (a > 1) 
+    {
+        int q = a / m;
+        int temp = m;
+
+        m = a % m;
+        a = temp;
+
+        temp = x0;
+        x0 = x1 - q * x0;
+        x1 = temp;
+    }
+
+    if (x1 < 0) 
+    {
+        x1 += mod;
+    }
+
+    return a == 1 ? x1 : -1;
+}
