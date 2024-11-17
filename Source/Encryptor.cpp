@@ -2,6 +2,29 @@
 #include <iostream>
 #include <unordered_set>
 #include <algorithm>
+#include <locale>
+#include <codecvt>
+
+
+static inline std::wstring utf8_to_wstring(const std::string& str)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    return converter.from_bytes(str);
+}
+
+static inline std::string wstring_to_utf8(const std::wstring& wstr)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    return converter.to_bytes(wstr);
+}
+
+
+static inline bool is_swedish_alpha(int c)
+{
+    c = std::tolower(c);
+    std::locale swe;
+    return  std::isalpha(c, swe);
+}
 
 std::string Encryptor::encrypt(std::string message) 
 {
@@ -26,7 +49,7 @@ void Encryptor::draw() const noexcept
 
 std::string Encryptor::addative_cipher(std::string_view message, int steps, bool decrypt)  noexcept
 {
-   std::string encrypted_message;
+   std::wstring encrypted_message;
    encrypted_message.reserve(message.size());
 
    if (decrypt)
@@ -52,7 +75,7 @@ std::string Encryptor::addative_cipher(std::string_view message, int steps, bool
        }
    }
 
-   return encrypted_message;
+   return wstring_to_utf8(encrypted_message);
 }
 
 std::string Encryptor::multiplicative_cipher(std::string_view message, int t, bool decrypt)
@@ -75,7 +98,7 @@ std::string Encryptor::multiplicative_cipher(std::string_view message, int t, bo
 
     for (const char c : message) 
     {
-        if (std::isalpha(c)) 
+        if (is_swedish_alpha(c))
         {
             const bool is_upper = std::isupper(c);
             const int base = is_upper ? 'A' : 'a';
@@ -95,7 +118,8 @@ std::string Encryptor::multiplicative_cipher(std::string_view message, int t, bo
 
 std::string Encryptor::keyword_cipher(std::string_view message, std::string_view key_word, char key_letter, bool decrypt)
 {
-    const std::string alphabet = "abcdefghijklmnopqrstuvwxyz";
+    
+    const std::string alphabet = ALPHABET_SVE;
     const std::string::size_type key_pos = alphabet.find(key_letter);
     const std::string unique_key_word = unique_letters(key_word);
 
@@ -110,10 +134,10 @@ std::string Encryptor::keyword_cipher(std::string_view message, std::string_view
     std::string encrypted_message;
     for (const char ch : message) 
     {
-        if (isalpha(ch))
+        if (is_swedish_alpha(ch))
         {
             const bool upper_case = std::isupper(ch);
-            const char lower_char = static_cast<char>(std::tolower(ch));
+            const char lower_char = narrow_cast<char>(std::tolower(ch));
 
             const std::string& source_alphabet = decrypt ? shifted_alphabet : alphabet;
             const std::string& target_alphabet = decrypt ? alphabet : shifted_alphabet;
@@ -139,11 +163,11 @@ std::string Encryptor::vigenere(std::string_view message, std::string_view keywo
     const size_t key_length = keyword.size();
     size_t key_index = 0;
 
-    for (char ch : message) 
+    for (const char ch : message) 
     {
-        if (std::isalpha(ch)) 
+        if (is_swedish_alpha(ch))
         {
-            char key_char = narrow_cast<char>(std::tolower(keyword[key_index % key_length]));
+            const char key_char = narrow_cast<char>(std::tolower(keyword.at(key_index % key_length)));
             int shift = key_char - 'a';
 
             if (decrypt)
@@ -179,7 +203,7 @@ std::string Encryptor::rövarspråk(std::string_view message, bool decrypt) noexce
    if(decrypt)
    {
        for (auto it = message.begin(); it != message.end(); ++it) {
-           char c = *it;
+           const char c = *it;
            result += c;
 
            if (is_consonant(c)) 
@@ -239,14 +263,14 @@ bool Encryptor::is_valid_multiplier(int t)
     return valid_multipliers.count(t) > 0;
 }
 
-int Encryptor::modular_inverse(int t, int mod) noexcept 
+constexpr int Encryptor::modular_inverse(int t, int mod) noexcept
 {
     int a = t, m = mod;
     int x0 = 0, x1 = 1;
 
     while (a > 1) 
     {
-        int q = a / m;
+        const int q = a / m;
         int temp = m;
 
         m = a % m;

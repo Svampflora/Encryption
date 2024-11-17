@@ -47,7 +47,6 @@ std::unique_ptr<State> Encryption::Update()
 		return std::make_unique<Analysis>();
 	}
 	
-
 	menu.update();
 	text_box.write();
 
@@ -57,7 +56,8 @@ std::unique_ptr<State> Encryption::Update()
 Encryption::Encryption() : //TODO: throws?
 	encryptor{},
 	text_box(LoadFont("assets/pixelmix/pixelmix.TTF"), { middle_of_screen().x - GetScreenWidthF() * 0.1f, middle_of_screen().y }, GetScreenHeightF() * 0.05f ),
-	menu(LoadFont("assets/pixelmix/pixelmix.TTF"))
+	menu(LoadFont("assets/pixelmix/pixelmix.TTF")),
+	file_manager("assets/message.txt")
 {
 	const Rectangle menu_area{ GetScreenWidthF() * 0.1f, GetScreenHeightF() * 0.1f, GetScreenWidthF() * 0.2f, GetScreenHeightF() * 0.8f };
 	const float button_height = menu_area.height / 8;
@@ -79,9 +79,10 @@ Encryption::Encryption() : //TODO: throws?
 	menu.add_button(button_2);
 
 	button_area.y += button_height;
+
 	Button button_4("Key Word", button_area, [this]() {
-		this->encryptor.add_cipher([](const std::string& message) {
-			return Encryptor::keyword_cipher(message, "key", 'k');
+		this->encryptor.add_cipher([this](const std::string& message) {
+			return Encryptor::keyword_cipher(message, this->text_box.get_text(), 'k');
 			});
 		});
 	menu.add_button(button_4);
@@ -96,7 +97,7 @@ Encryption::Encryption() : //TODO: throws?
 
 	button_area.y += button_height;
 	Button button_6("Encrypt", button_area, [this]() {
-		this->text_box.set_text(this->encryptor.encrypt(this->text_box.get_text()));
+		this->file_manager.write(this->encryptor.encrypt(this->file_manager.read()));
 		});
 	menu.add_button(button_6);
 

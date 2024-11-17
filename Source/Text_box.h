@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Settings.h"
 #include "Button.h"
 
 
@@ -37,12 +37,12 @@ public:
 		}
 	}
 
-	std::string get_text()
+	std::string get_text() const noexcept
 	{
 		return text;
 	}
 
-	void set_text(const std::string& _text)
+	void set_text(const std::string& _text) noexcept
 	{
 		text = _text;
 	}

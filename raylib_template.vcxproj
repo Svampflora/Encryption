@@ -176,6 +176,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Button.h" />
     <ClInclude Include="Source\Cipher_analyser.h" />
+    <ClInclude Include="Source\File_manager.h" />
     <ClInclude Include="Source\Settings.h" />
     <ClInclude Include="Source\Analysis.h" />
     <ClInclude Include="Source\Game.h" />

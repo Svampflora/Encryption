@@ -20,6 +20,5 @@ void Start_screen::Render() const noexcept
 
 void Start_screen::Draw_title() const noexcept
 {
-	DrawText("SPACE INVADERS", 200, 100, 160, YELLOW);
-	DrawText("PRESS SPACE TO BEGIN", 200, 350, 40, YELLOW);
+	DrawText("PRESS SPACE TO BEGIN", 200, 350, 40, PINK);
 }

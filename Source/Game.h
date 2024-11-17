@@ -1,5 +1,4 @@
 #pragma once
-#include "Settings.h"
 #include "Window.h"
 #include "Startscreen.h"
 #include "Encryption.h"

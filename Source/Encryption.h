@@ -7,6 +7,7 @@ class Encryption : public State
 	Encryptor encryptor;
 	Text_box text_box;
 	Menu menu;
+	File_manager file_manager;
 
 public:
 	

@@ -1,5 +1,6 @@
 #pragma once
 #include "Text_box.h"
+#include "File_manager.h"
 
 
 
@@ -23,6 +24,6 @@ private:
 	static std::string unique_letters(const std::string_view& message);
 	static bool is_consonant(char c) noexcept;
 	static bool is_valid_multiplier(int t);
-	static int modular_inverse(int t, int mod) noexcept;
+	static constexpr int modular_inverse(int t, int mod) noexcept;
 
 };

@@ -51,3 +51,5 @@ static inline Color transparent_color(const Color& color, const unsigned char& a
 {
 	return { color.r, color.g, color.b, alpha };
 }
+
+
