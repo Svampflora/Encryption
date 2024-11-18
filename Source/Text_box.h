@@ -1,11 +1,11 @@
 #pragma once
 #include "Settings.h"
 #include "Button.h"
-
+#include "utf-8.h"
 
 class Text_box
 {
-	std::string text;
+	std::wstring text;
 	Font font;
 	Vector2 position;
 	float size;
@@ -37,28 +37,24 @@ public:
 		}
 	}
 
-	std::string get_text() const noexcept
+	std::wstring get_text() const noexcept
 	{
 		return text;
 	}
 
-	void set_text(const std::string& _text) noexcept
-	{
-		text = _text;
-	}
-
 	void draw() const noexcept
 	{
+		
 		DrawRectanglePro(box(), { 0.0f, 0.0f }, 0.0f, GRAY);
-		DrawTextPro(font, text.data(), position, { 0.0f, 0.0f }, 0.0f, size, 1, PINK);
+		DrawTextPro(font, utf8_encode(text).c_str(), position, {0.0f, 0.0f}, 0.0f, size, 1, PINK);
 		draw_caret();
 	}
 
 private:
 	Rectangle box() const noexcept
 	{
-		std::string elongated = text + "a";
-		const Vector2 mesurements = MeasureTextEx(font, elongated.c_str(), size, 1.0f);
+		std::wstring elongated = text + L"a";
+		const Vector2 mesurements = MeasureTextEx(font, utf8_encode(elongated).c_str(), size, 1.0f);
 		return { position.x - padding(), position.y - padding(), mesurements.x + 2 * padding(), mesurements.y + 2 * padding() };
 	}
 

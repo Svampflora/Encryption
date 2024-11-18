@@ -64,7 +64,7 @@ Encryption::Encryption() : //TODO: throws?
 
 	Rectangle button_area{ menu_area.x, menu_area.y, menu_area.width, button_height };
 	Button button_1("Addative (Shift 3)", button_area, [this]() {
-		this->encryptor.add_cipher([](const std::string& message) noexcept {
+		this->encryptor.add_cipher([](const std::wstring& message) noexcept {
 			return Encryptor::addative_cipher(message, 3);
 			});
 		});
@@ -72,7 +72,7 @@ Encryption::Encryption() : //TODO: throws?
 
 	button_area.y += button_height;
 	Button button_2("Multiplicative (Shift 3)", button_area, [this]() {
-		this->encryptor.add_cipher([](const std::string& message) {
+		this->encryptor.add_cipher([](const std::wstring& message) {
 			return Encryptor::multiplicative_cipher(message, 3);
 			});
 		});
@@ -81,7 +81,7 @@ Encryption::Encryption() : //TODO: throws?
 	button_area.y += button_height;
 
 	Button button_4("Key Word", button_area, [this]() {
-		this->encryptor.add_cipher([this](const std::string& message) {
+		this->encryptor.add_cipher([this](const std::wstring& message) {
 			return Encryptor::keyword_cipher(message, this->text_box.get_text(), 'k');
 			});
 		});
@@ -89,7 +89,7 @@ Encryption::Encryption() : //TODO: throws?
 
 	button_area.y += button_height;
 	Button button_5("Rövarspråk", button_area, [this]() {
-		this->encryptor.add_cipher([](const std::string& message) {
+		this->encryptor.add_cipher([](const std::wstring& message) {
 			return Encryptor::rövarspråk(message);
 			});
 		});

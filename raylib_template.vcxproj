@@ -172,6 +172,7 @@
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Encryptor.cpp" />
     <ClCompile Include="Source\Startscreen.cpp" />
+    <ClCompile Include="Source\utf-8.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Button.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="Source\State.h" />
     <ClInclude Include="Source\Encryptor.h" />
     <ClInclude Include="Source\Text_box.h" />
+    <ClInclude Include="Source\utf-8.h" />
     <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Window.h" />
   </ItemGroup>
