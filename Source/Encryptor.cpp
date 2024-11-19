@@ -92,7 +92,7 @@ std::wstring Encryptor::multiplicative_cipher(std::wstring_view message, int t, 
 std::wstring Encryptor::keyword_cipher(std::wstring_view message, std::wstring_view key_word, char key_letter, bool decrypt)
 {
     
-    const std::wstring alphabet =  L"abcdefghijklmnopqrstuvwxyzåäö" ; //TODO: inject alphabet to class
+    const std::wstring alphabet = ALPHABET_SWE; //TODO: inject alphabet to class
     const std::wstring::size_type key_pos = alphabet.find(key_letter);
     const std::wstring unique_key_word = unique_letters(key_word);
 
