@@ -4,9 +4,11 @@
 
 #pragma warning(push)
 #pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
-std::string utf8_encode(const std::wstring& wide_string) {
+std::string utf8_encode(const std::wstring& wide_string) noexcept
+{
     std::string utf8_string;
-    for (const wchar_t wc : wide_string) {
+    for (const wchar_t wc : wide_string) 
+    {
         uint32_t wide_char = static_cast<uint32_t>(wc); // Promote to larger type
 
         if (wide_char < 0x80) { // 1-byte (ASCII)
@@ -32,7 +34,7 @@ std::string utf8_encode(const std::wstring& wide_string) {
 }
 
 
-std::wstring utf8_decode(const std::string& utf8_string) 
+std::wstring utf8_decode(const std::string& utf8_string) noexcept
 {
     std::wstring wide_string;
     for (size_t i = 0; i < utf8_string.size();) 

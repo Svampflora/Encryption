@@ -3,6 +3,10 @@
 #include <unordered_set>
 #include <algorithm>
 
+wchar_t case_sensitive(wchar_t c, bool upper_case) noexcept
+{
+    return upper_case ? static_cast<wchar_t>(std::toupper(c)) : c;
+}
 
 std::wstring Encryptor::encrypt(std::wstring message) 
 {
@@ -26,6 +30,8 @@ void Encryptor::draw() const noexcept
 
 std::wstring Encryptor::addative_cipher(std::wstring_view message, int steps, bool decrypt) 
 {
+   const std::wstring alphabet = ALPHABET_SWE;
+   const size_t alphabet_size = alphabet.length();
    std::wstring encrypted_message;
    encrypted_message.reserve(message.size());
 
@@ -39,7 +45,7 @@ std::wstring Encryptor::addative_cipher(std::wstring_view message, int steps, bo
        const bool is_upper = std::isupper(c);
        if (const int index = char_to_index(c) > -1)
        {
-           const int new_index = (index + steps) % ALPHABET_SIZE;
+           const int new_index = (index + steps) % alphabet_size;
            encrypted_message += index_to_char(new_index, is_upper);
        }
        else
@@ -50,6 +56,33 @@ std::wstring Encryptor::addative_cipher(std::wstring_view message, int steps, bo
 
    return encrypted_message;
 }
+//std::wstring Encryptor::addative_cipher(std::wstring_view message, wchar_t steps, bool decrypt)
+//{
+//    const std::wstring alphabet = ALPHABET_SWE;
+//    std::wstring encrypted_message;
+//    encrypted_message.reserve(message.size());
+//
+//    if (decrypt)
+//    {
+//        steps = -steps;
+//    }
+//
+//    std::unordered_map<wchar_t, wchar_t> substitution_map;
+//    for (auto it = alphabet.begin(); it != alphabet.end(); ++it) 
+//    {
+//        auto wrapped_it = wrap_around_iterator(it, alphabet.begin(), alphabet.end(), steps);
+//        substitution_map[*it] = *wrapped_it;
+//    }
+//
+//    for (const wchar_t c : message)
+//    {
+//        encrypted_message += case_sensitive(substitution_map[c], std::isupper(c));
+//    }
+//
+//    return encrypted_message;
+//}
+
+
 
 std::wstring Encryptor::multiplicative_cipher(std::wstring_view message, int t, bool decrypt)
 {
@@ -88,6 +121,8 @@ std::wstring Encryptor::multiplicative_cipher(std::wstring_view message, int t, 
 
     return encrypted_message;
 }
+
+
 
 std::wstring Encryptor::keyword_cipher(std::wstring_view message, std::wstring_view key_word, char key_letter, bool decrypt)
 {
@@ -243,7 +278,10 @@ int Encryptor::char_to_index(wchar_t c) noexcept
 
 wchar_t Encryptor::index_to_char( int index, bool uppercase) noexcept
 {
-    const wchar_t c = ALPHABET_SWE[index % ALPHABET_SIZE];
+    const std::wstring alphabet = ALPHABET_SWE;
+    const size_t alphabet_size = alphabet.length();
+
+    const wchar_t c = alphabet[index % alphabet_size];
     return uppercase ? narrow_cast<wchar_t>(std::toupper(c)) : c;
 }
 

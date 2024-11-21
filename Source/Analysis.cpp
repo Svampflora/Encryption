@@ -4,14 +4,27 @@
 #include <iostream>
 
 
+Analysis::Analysis() noexcept:
+decryptor{},
+file_manager("assets/message.txt")
+{
+}
+
 std::unique_ptr<State> Analysis::Update()
 {
-
-
 	if (IsKeyReleased(KEY_ENTER))
 	{
 		return std::make_unique<Start_screen>();
 	}
+
+	if (IsKeyReleased(KEY_SPACE))
+	{
+		std::wstring message = file_manager.read();
+		message = decryptor.simple_attack(message);
+		file_manager.write(message);
+	}
+
+
 	return nullptr;
 }
 
