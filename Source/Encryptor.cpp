@@ -28,101 +28,52 @@ void Encryptor::draw() const noexcept
 
 }
 
-std::wstring Encryptor::addative_cipher(std::wstring_view message, int steps, bool decrypt) 
+std::wstring Encryptor::addative_cipher(std::wstring_view message, int steps, bool decrypt)
 {
-   const std::wstring alphabet = ALPHABET_SWE;
-   const size_t alphabet_size = alphabet.length();
-   std::wstring encrypted_message;
-   encrypted_message.reserve(message.size());
+    const std::wstring alphabet = ALPHABET_SWE;
 
-   if (decrypt)
-   {
-       steps = -steps;
-   }
+    if (decrypt)
+    {
+        steps = -steps;
+    }
 
-   for (const wchar_t c : message)
-   {
-       const bool is_upper = std::isupper(c);
-       if (const int index = char_to_index(c) > -1)
-       {
-           const int new_index = (index + steps) % alphabet_size;
-           encrypted_message += index_to_char(new_index, is_upper);
-       }
-       else
-       {
-           encrypted_message += c;
-       }
-   }
+    std::unordered_map<wchar_t, wchar_t> substitution_map;
+    for (auto it = alphabet.begin(); it != alphabet.end(); ++it) 
+    {
+        auto wrapped_it = wrap_around_iterator(it, alphabet.begin(), alphabet.end(), steps);
+        substitution_map[*it] = *wrapped_it;
+    }
 
-   return encrypted_message;
+    return apply_substitution_map(message, substitution_map);
 }
-//std::wstring Encryptor::addative_cipher(std::wstring_view message, wchar_t steps, bool decrypt)
-//{
-//    const std::wstring alphabet = ALPHABET_SWE;
-//    std::wstring encrypted_message;
-//    encrypted_message.reserve(message.size());
-//
-//    if (decrypt)
-//    {
-//        steps = -steps;
-//    }
-//
-//    std::unordered_map<wchar_t, wchar_t> substitution_map;
-//    for (auto it = alphabet.begin(); it != alphabet.end(); ++it) 
-//    {
-//        auto wrapped_it = wrap_around_iterator(it, alphabet.begin(), alphabet.end(), steps);
-//        substitution_map[*it] = *wrapped_it;
-//    }
-//
-//    for (const wchar_t c : message)
-//    {
-//        encrypted_message += case_sensitive(substitution_map[c], std::isupper(c));
-//    }
-//
-//    return encrypted_message;
-//}
-
-
 
 std::wstring Encryptor::multiplicative_cipher(std::wstring_view message, int t, bool decrypt)
 {
-
+    const std::wstring alphabet = ALPHABET_SWE;
     if (!is_valid_multiplier(t)) 
     {
         return L"Invalid multiplier!";
     }
 
-    if (decrypt) {
+    if (decrypt) 
+    {
         t = modular_inverse(t, 26);
-        if (t == -1) {
+        if (t == -1) 
+        {
             return L"No modular inverse exists for the given multiplier!";
         }
     }
 
-    std::wstring encrypted_message;
-    encrypted_message.reserve(message.size());
-
-    for (const wchar_t c : message)
+    std::unordered_map<wchar_t, wchar_t> substitution_map;
+    for (auto it = alphabet.begin(); it != alphabet.end(); ++it)
     {
-        if (const int index = char_to_index(c) > -1)
-        {
-            const bool is_upper = std::isupper(c);
-            const int base = is_upper ? 'A' : 'a';
-            const int original_pos = c - base;
-            const int new_pos = (original_pos * t) % 26;
-
-            encrypted_message += narrow_cast<char>(new_pos + base);
-        }
-        else 
-        {
-            encrypted_message += c;
-        }
+        auto wrapped_it = wrap_around_iterator(it, alphabet.begin(), alphabet.end(), narrow_cast<int>(std::distance(alphabet.begin(), it)) * t);
+        substitution_map[*it] = *wrapped_it;
     }
+    
+    return apply_substitution_map(message, substitution_map);
 
-    return encrypted_message;
 }
-
-
 
 std::wstring Encryptor::keyword_cipher(std::wstring_view message, std::wstring_view key_word, char key_letter, bool decrypt)
 {
@@ -139,31 +90,15 @@ std::wstring Encryptor::keyword_cipher(std::wstring_view message, std::wstring_v
     std::wstring shifted_alphabet = unique_letters(unique_key_word + alphabet);
     shifted_alphabet = shifted_alphabet.substr(key_pos) + shifted_alphabet.substr(0, key_pos);
 
-    std::wstring encrypted_message;
-    for (const wchar_t ch : message)
+    const std::wstring& source_alphabet = decrypt ? shifted_alphabet : alphabet;
+    const std::wstring& target_alphabet = decrypt ? alphabet : shifted_alphabet;
+    std::unordered_map<wchar_t, wchar_t> substitution_map;
+    for (size_t i = 0; i < source_alphabet.size(); ++i) 
     {
-        if (const int index = char_to_index(ch) > -1)
-        {
-            const bool upper_case = std::isupper(ch);
-            const wchar_t lower_char = narrow_cast<wchar_t>(std::tolower(ch));
-
-            const std::wstring& source_alphabet = decrypt ? shifted_alphabet : alphabet;
-            const std::wstring& target_alphabet = decrypt ? alphabet : shifted_alphabet;
-            const auto new_index = source_alphabet.find(lower_char);
-
-            if (new_index != std::wstring::npos)
-            {
-                const wchar_t processed_char = target_alphabet.at(new_index);
-                encrypted_message += upper_case ? static_cast<wchar_t>(std::toupper(processed_char)) : processed_char;
-            }
-        }
-        else 
-        {
-            encrypted_message += ch;
-        }
+        substitution_map[source_alphabet.at(i)] = target_alphabet.at(i);
     }
 
-    return encrypted_message;
+    return apply_substitution_map(message, substitution_map);
 }
 
 std::wstring Encryptor::vigenere(std::wstring_view message, std::wstring_view keyword, bool decrypt)
@@ -260,6 +195,26 @@ std::wstring Encryptor::unique_letters(const std::wstring_view& message)
     return result;
 }
 
+std::wstring Encryptor::apply_substitution_map(std::wstring_view message, std::unordered_map<wchar_t, wchar_t> substitution_map)
+{
+    std::wstring encrypted_message;
+    encrypted_message.reserve(message.size());
+    for (const wchar_t c : message)
+    {
+        const wchar_t key = narrow_cast<wchar_t>(std::tolower(c));
+        if (substitution_map.contains(key))
+        {
+            encrypted_message += case_sensitive(substitution_map.at(key), std::isupper(c));
+        }
+        else
+        {
+            encrypted_message += c;
+
+        }
+    }
+    return encrypted_message;
+}
+
 int Encryptor::char_to_index(wchar_t c) noexcept
 {
     c = narrow_cast<wchar_t>(std::tolower(c));
@@ -274,15 +229,6 @@ int Encryptor::char_to_index(wchar_t c) noexcept
     }
 
     return -1;
-}
-
-wchar_t Encryptor::index_to_char( int index, bool uppercase) noexcept
-{
-    const std::wstring alphabet = ALPHABET_SWE;
-    const size_t alphabet_size = alphabet.length();
-
-    const wchar_t c = alphabet[index % alphabet_size];
-    return uppercase ? narrow_cast<wchar_t>(std::toupper(c)) : c;
 }
 
 bool Encryptor::is_consonant(wchar_t c) noexcept

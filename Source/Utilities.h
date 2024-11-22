@@ -63,8 +63,8 @@ static inline Color transparent_color(const Color& color, const unsigned char& a
 template <typename Iterator>
 Iterator wrap_around_iterator(Iterator current, Iterator begin, Iterator end, int offset) 
 {
-	auto size = std::distance(begin, end);
-	auto current_index = std::distance(begin, current);
+	const auto size = std::distance(begin, end);
+	const auto current_index = std::distance(begin, current);
 
 	auto wrapped_index = (current_index + offset) % size;
 	if (wrapped_index < 0) wrapped_index += size;

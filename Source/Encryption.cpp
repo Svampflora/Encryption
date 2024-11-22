@@ -68,7 +68,7 @@ Encryption::Encryption() : //TODO: throws?
 			return Encryptor::addative_cipher(message, 3);
 			});
 		});
-	menu.add_button(button_1);
+	menu.add_button(button_1); 
 
 	button_area.y += button_height;
 	Button button_2("Multiplicative (Shift 3)", button_area, [this]() {

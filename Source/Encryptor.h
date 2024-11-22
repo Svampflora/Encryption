@@ -22,9 +22,9 @@ public:
 
 private:
 	static std::wstring unique_letters(const std::wstring_view& message);
+	static std::wstring apply_substitution_map(std::wstring_view message, std::unordered_map<wchar_t, wchar_t> substitution_map);
 	static constexpr int modular_inverse(int t, int mod) noexcept;
 	static int char_to_index(wchar_t c) noexcept;
-	static wchar_t index_to_char(int index, bool uppercase) noexcept;
 	static bool is_consonant(wchar_t c) noexcept;
 	static bool is_valid_multiplier(int t);
 
