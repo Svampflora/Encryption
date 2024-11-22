@@ -80,9 +80,17 @@ Encryption::Encryption() : //TODO: throws?
 
 	button_area.y += button_height;
 
-	Button button_4("Key Word", button_area, [this]() {
+	Button button_3("Key Word", button_area, [this]() {
 		this->encryptor.add_cipher([this](const std::wstring& message) {
 			return Encryptor::keyword_cipher(message, this->text_box.get_text(), 'k');
+			});
+		});
+	menu.add_button(button_3);
+
+	button_area.y += button_height;
+	Button button_4("vigenère", button_area, [this]() {
+		this->encryptor.add_cipher([this](const std::wstring& message) {
+			return Encryptor::vigenere(message, this->text_box.get_text());
 			});
 		});
 	menu.add_button(button_4);

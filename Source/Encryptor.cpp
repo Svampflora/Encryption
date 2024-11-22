@@ -103,13 +103,15 @@ std::wstring Encryptor::keyword_cipher(std::wstring_view message, std::wstring_v
 
 std::wstring Encryptor::vigenere(std::wstring_view message, std::wstring_view keyword, bool decrypt)
 {
+    const std::wstring alphabet = ALPHABET_SWE;
     std::wstring encrypted_message;
     const size_t key_length = keyword.size();
     size_t key_index = 0;
 
     for (const wchar_t ch : message)
     {
-        if (const int index = char_to_index(ch) > -1)
+
+        if(alphabet.contains(ch))
         {
             const wchar_t key_char = narrow_cast<wchar_t>(std::tolower(keyword.at(key_index % key_length)));
             int shift = key_char - 'a';
@@ -119,14 +121,8 @@ std::wstring Encryptor::vigenere(std::wstring_view message, std::wstring_view ke
                 shift = -shift;
             }
 
-            if (std::islower(ch)) 
-            {
-                encrypted_message += ((ch - 'a' + shift) % 26) + 'a';
-            }
-            else 
-            {
-                encrypted_message += ((ch - 'A' + shift) % 26) + 'A';
-            }
+            const wchar_t letter = ((std::tolower(ch) - 'a' + shift) % 26) + 'a';
+            encrypted_message += case_sensitive(letter, std::isupper(ch));
 
             ++key_index;
         }
@@ -213,22 +209,6 @@ std::wstring Encryptor::apply_substitution_map(std::wstring_view message, std::u
         }
     }
     return encrypted_message;
-}
-
-int Encryptor::char_to_index(wchar_t c) noexcept
-{
-    c = narrow_cast<wchar_t>(std::tolower(c));
-    unsigned int index = 0;
-    for (const auto letter : ALPHABET_SWE)
-    {
-        if (letter == c)
-        {
-            return index;
-        }
-        index++;
-    }
-
-    return -1;
 }
 
 bool Encryptor::is_consonant(wchar_t c) noexcept
