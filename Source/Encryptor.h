@@ -11,6 +11,7 @@ class Encryptor
 
 public:
 	std::wstring encrypt(std::wstring message);
+	std::wstring decrypt(std::wstring message);
 	void add_cipher(std::function<std::wstring(const std::wstring&)> cipher);
 	void draw() const noexcept;
 

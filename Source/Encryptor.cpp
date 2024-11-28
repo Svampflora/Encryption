@@ -18,6 +18,16 @@ std::wstring Encryptor::encrypt(std::wstring message)
     return message;
 }
 
+std::wstring Encryptor::decrypt(std::wstring message)
+{
+    for (const auto& cipher : ciphers)
+    {
+        message = cipher(message);
+    }
+    ciphers.clear();
+    return message;
+}
+
 void Encryptor::add_cipher(std::function<std::wstring(const std::wstring&)> cipher)
 {
     ciphers.push_back(cipher);
