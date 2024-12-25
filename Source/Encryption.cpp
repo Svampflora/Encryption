@@ -61,19 +61,19 @@ Encryption::Encryption() : //TODO: throws?
 {
 	const Rectangle menu_area{ GetScreenWidthF() * 0.1f, GetScreenHeightF() * 0.1f, GetScreenWidthF() * 0.2f, GetScreenHeightF() * 0.8f };
 	const float button_height = menu_area.height / 8;
-
+	
 	Rectangle button_area{ menu_area.x, menu_area.y, menu_area.width, button_height };
 	Button button_1("Addative (Shift 3)", button_area, [this]() {
-		this->encryptor.add_cipher([](const std::wstring& message) noexcept {
-			return Encryptor::addative_cipher(message, 3);
+		this->encryptor.select_cipher([](const std::wstring& message, const bool decrypt) {
+			return Encryptor::addative_cipher(message, 3, decrypt);
 			});
 		});
 	menu.add_button(button_1); 
 
 	button_area.y += button_height;
 	Button button_2("Multiplicative (Shift 3)", button_area, [this]() {
-		this->encryptor.add_cipher([](const std::wstring& message) {
-			return Encryptor::multiplicative_cipher(message, 3);
+		this->encryptor.select_cipher([](const std::wstring& message, const bool decrypt) {
+			return Encryptor::multiplicative_cipher(message, 3, decrypt);
 			});
 		});
 	menu.add_button(button_2);
@@ -81,24 +81,24 @@ Encryption::Encryption() : //TODO: throws?
 	button_area.y += button_height;
 
 	Button button_3("Key Word", button_area, [this]() {
-		this->encryptor.add_cipher([this](const std::wstring& message) {
-			return Encryptor::keyword_cipher(message, this->text_box.get_text(), 'k');
+		this->encryptor.select_cipher([this](const std::wstring& message, const bool decrypt) {
+			return Encryptor::keyword_cipher(message, this->text_box.get_text(), text_box.get_text().front(), decrypt);
 			});
 		});
 	menu.add_button(button_3);
 
 	button_area.y += button_height;
 	Button button_4("vigenère", button_area, [this]() {
-		this->encryptor.add_cipher([this](const std::wstring& message) {
-			return Encryptor::vigenere(message, this->text_box.get_text());
+		this->encryptor.select_cipher([this](const std::wstring& message, const bool decrypt) {
+			return Encryptor::vigenere(message, this->text_box.get_text(), decrypt);
 			});
 		});
 	menu.add_button(button_4);
 
 	button_area.y += button_height;
-	Button button_5("Rövarspråk", button_area, [this]() {
-		this->encryptor.add_cipher([](const std::wstring& message) {
-			return Encryptor::rövarspråk(message);
+	Button button_5("Rövarspråk", button_area, [this]() noexcept{
+		this->encryptor.select_cipher([](const std::wstring& message, const bool decrypt) {
+			return Encryptor::rövarspråk(message, decrypt);
 			});
 		});
 	menu.add_button(button_5);
@@ -108,6 +108,12 @@ Encryption::Encryption() : //TODO: throws?
 		this->file_manager.write(this->encryptor.encrypt(this->file_manager.read()));
 		});
 	menu.add_button(button_6);
+
+	button_area.y += button_height;
+	Button button_7("Decrypt", button_area, [this]() {
+		this->file_manager.write(this->encryptor.decrypt(this->file_manager.read()));
+		});
+	menu.add_button(button_7);
 
 }
 
