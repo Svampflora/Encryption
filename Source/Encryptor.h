@@ -4,6 +4,7 @@
 
 class Encryptor
 {
+	//std::wstring alphabet{ ALPHABET_SWE.data()};
 	std::function<std::wstring(const std::wstring&, const bool)> cipher;
 
 public:

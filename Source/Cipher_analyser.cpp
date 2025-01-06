@@ -8,7 +8,7 @@
 
 std::wstring Cipher_analyser::simple_attack(const std::wstring_view _message)
 {
-    const std::wstring alphabet = ALPHABET_SWE;
+    const std::wstring alphabet = ALPHABET_SWE.data();
     std::vector<float> message_letter_frequency;
     const size_t alphabet_size = alphabet.length();
     message_letter_frequency.reserve(alphabet_size);
@@ -73,7 +73,7 @@ float Cipher_analyser::letter_frequency(const std::wstring_view& _message, const
 
 float Cipher_analyser::index_of_coincidence(const std::wstring_view _message) 
 {
-    std::wstring alphabet = ALPHABET_SWE;
+    std::wstring alphabet = ALPHABET_SWE.data();
     std::unordered_map<wchar_t, int> frequency;
     int total_letters = 0;
 

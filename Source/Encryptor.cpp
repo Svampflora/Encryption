@@ -30,7 +30,7 @@ void Encryptor::draw() const noexcept
 
 std::wstring Encryptor::addative_cipher(std::wstring_view message, int steps, bool decrypt)
 {
-    const std::wstring alphabet = ALPHABET_SWE;
+    const std::wstring_view alphabet = ALPHABET_SWE;
 
     if (decrypt)
     {
@@ -47,9 +47,32 @@ std::wstring Encryptor::addative_cipher(std::wstring_view message, int steps, bo
     return apply_substitution_map(message, substitution_map);
 }
 
+//std::wstring Encryptor::addative_cipher(std::wstring_view message, int steps, bool decrypt)
+//{
+//    const std::wstring_view alphabet = ALPHABET_SWE;
+//    std::wstring_view shifterd_alphabet = alphabet;
+//    
+//    if (decrypt)
+//    {
+//        std::rotate(shifterd_alphabet.begin(), shifterd_alphabet.begin() + steps, shifterd_alphabet.end());
+//    }
+//    else
+//    {
+//        std::rotate(shifterd_alphabet.rbegin(), shifterd_alphabet.rbegin() + steps, shifterd_alphabet.rend());
+//    }
+//
+//    std::unordered_map<wchar_t, wchar_t> substitution_map;
+//    for (size_t i = 0; i < alphabet.size(); ++i)
+//    {
+//        substitution_map[alphabet[i]] = shifterd_alphabet[i];
+//    }
+//
+//    return apply_substitution_map(message, substitution_map);
+//}
+
 std::wstring Encryptor::multiplicative_cipher(std::wstring_view message, int t, bool decrypt)
 {
-    const std::wstring alphabet = ALPHABET_SWE;
+    const std::wstring_view alphabet = ALPHABET_SWE;
     const int alphabet_length = narrow_cast<int>(alphabet.length());
     if (!is_valid_multiplier(t)) 
     {
@@ -68,7 +91,7 @@ std::wstring Encryptor::multiplicative_cipher(std::wstring_view message, int t, 
     std::unordered_map<wchar_t, wchar_t> substitution_map;
     for (auto it = alphabet.begin(); it != alphabet.end(); ++it)
     {
-        auto wrapped_it = wrap_around_iterator(it, alphabet.begin(), alphabet.end(), narrow_cast<int>(std::distance(alphabet.begin(), it)) * t);
+        auto wrapped_it = wrap_around_iterator(it, alphabet.begin(), alphabet.end(), narrow_cast<int>(std::distance(alphabet.begin(), it)) * t); 
         substitution_map[*it] = *wrapped_it;
     }
     
@@ -79,7 +102,7 @@ std::wstring Encryptor::multiplicative_cipher(std::wstring_view message, int t, 
 std::wstring Encryptor::keyword_cipher(std::wstring_view message, const std::wstring_view _keyword, const wchar_t key_letter, const bool decrypt)
 {
     const std::wstring keyword = to_low_letters(_keyword);
-    const std::wstring alphabet = ALPHABET_SWE; //TODO: inject alphabet to class
+    const std::wstring alphabet = ALPHABET_SWE.data(); //TODO: inject alphabet to class
     const std::wstring::size_type key_pos = alphabet.find(narrow_cast<wchar_t>(std::tolower(key_letter)));
     const std::wstring unique_key_word = unique_letters(keyword);
 
@@ -91,8 +114,8 @@ std::wstring Encryptor::keyword_cipher(std::wstring_view message, const std::wst
     std::wstring shifted_alphabet = unique_letters(unique_key_word + alphabet);
     shifted_alphabet = shifted_alphabet.substr(key_pos) + shifted_alphabet.substr(0, key_pos);
 
-    const std::wstring& source_alphabet = decrypt ? shifted_alphabet : alphabet;
-    const std::wstring& target_alphabet = decrypt ? alphabet : shifted_alphabet;
+    const std::wstring_view source_alphabet = decrypt ? shifted_alphabet : alphabet;
+    const std::wstring_view target_alphabet = decrypt ? alphabet : shifted_alphabet;
     std::unordered_map<wchar_t, wchar_t> substitution_map;
     for (size_t i = 0; i < source_alphabet.size(); ++i) 
     {
@@ -105,26 +128,30 @@ std::wstring Encryptor::keyword_cipher(std::wstring_view message, const std::wst
 std::wstring Encryptor::vigenere(std::wstring_view message, std::wstring_view _keyword, bool decrypt)
 {
     const std::wstring keyword = to_low_letters(_keyword);
-    const std::wstring alphabet = ALPHABET_SWE;
+    const std::wstring_view alphabet = ALPHABET_SWE;
     const std::wstring::size_type alphabet_length = alphabet.size();
     const std::wstring::size_type key_length = keyword.size();
     std::wstring new_message;
-    size_t key_index = 0;
-
+    rsize_t key_index = 0;
+    bool debug = false;
     for (const wchar_t ch : message)
     {
+
+        if (ch == L'a')
+        {
+            debug = true;
+        }
+
         const wchar_t low_ch = narrow_cast<wchar_t>(std::tolower(ch));
         if(alphabet.contains(low_ch))
         {
             const wchar_t key_char = keyword.at(key_index % key_length);
-            int shift = narrow_cast<int>(alphabet.find(key_char));
-            
-            if (decrypt)
-            {
-                shift = -shift;
-            }
+            const size_t shift = alphabet.find(key_char);
+            const size_t ch_index = alphabet.find(low_ch);
 
-            const wchar_t letter = alphabet.at((alphabet.find(low_ch) + shift) % alphabet_length);
+            const size_t index = (ch_index + (decrypt ? (alphabet_length - shift) : shift)) % alphabet_length;
+            const wchar_t letter = alphabet.at(index);
+
             new_message += set_case(letter, std::isupper(ch));
 
             ++key_index;
