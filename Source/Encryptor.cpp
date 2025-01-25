@@ -2,10 +2,49 @@
 #include <iostream>
 #include <unordered_set>
 #include <algorithm>
+#include <random>
+
 
 wchar_t set_case(wchar_t c, bool upper_case) noexcept
 {
     return upper_case ? static_cast<wchar_t>(std::toupper(c)) : c;
+}
+
+unsigned long djb2(const wchar_t* str) noexcept //TODO: translate to C++
+{
+    unsigned long hash = 5381;
+    int c;
+
+    while (*str)
+    {
+        c = *str++;
+        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+    }
+
+    return hash;
+}
+
+
+std::wstring generate_pseudo_random(const size_t length, const std::wstring available_chars, unsigned long seed)
+{
+    if (available_chars.empty()) 
+    {
+        throw std::invalid_argument("available_chars must not be empty.");
+    }
+
+    std::mt19937 rng(seed);
+    std::uniform_int_distribution<size_t> distribution(0, available_chars.size() - 1);
+
+    std::wstring random_string;
+    random_string.reserve(length);
+
+    for (size_t i = 0; i < length; ++i) 
+    {
+        const size_t random_index = distribution(rng);
+        random_string += available_chars.at(random_index);
+    }
+
+    return random_string;
 }
 
 std::wstring Encryptor::encrypt(std::wstring message) 
@@ -207,6 +246,18 @@ std::wstring Encryptor::rövarspråk(std::wstring_view message, bool decrypt) noex
    return result;
 }
 
+std::wstring Encryptor::hashed_keyword(std::wstring_view message, std::wstring_view keyword, bool decrypt)
+{
+    const std::wstring_view alphabet = ALPHABET_SWE;
+    const unsigned long hash = djb2(keyword.data());
+    std::wstring filter = generate_pseudo_random(message.length(), alphabet.data(), hash);
+    std::wstring result = vigenere(message, filter, decrypt);
+
+    return result;
+}
+
+
+
 std::wstring Encryptor::to_low_letters(const std::wstring_view& string_view)
 {
     std::wstring low_letters; 
@@ -288,4 +339,6 @@ constexpr int Encryptor::modular_inverse(int t, int mod) noexcept
 
     return a == 1 ? x1 : -1;
 }
+
+
 

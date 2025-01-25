@@ -104,6 +104,14 @@ Encryption::Encryption() : //TODO: throws?
 	menu.add_button(button_5);
 
 	button_area.y += button_height;
+	Button button_8("hashed_keyword", button_area, [this]() {
+		this->encryptor.select_cipher([this](const std::wstring& message, const bool decrypt) {
+			return Encryptor::hashed_keyword(message, this->text_box.get_text(), decrypt);
+			});
+		});
+	menu.add_button(button_8);
+
+	button_area.y += button_height;
 	Button button_6("Encrypt", button_area, [this]() {
 		this->file_manager.write(this->encryptor.encrypt(this->file_manager.read()));
 		});
@@ -114,6 +122,7 @@ Encryption::Encryption() : //TODO: throws?
 		this->file_manager.write(this->encryptor.decrypt(this->file_manager.read()));
 		});
 	menu.add_button(button_7);
+
 
 }
 

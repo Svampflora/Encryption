@@ -20,7 +20,7 @@ std::unique_ptr<State> Analysis::Update()
 	if (IsKeyReleased(KEY_SPACE))
 	{
 		std::wstring message = file_manager.read();
-		message = decryptor.simple_attack(message);
+		//message = decryptor.monoalphabetic_attack(message);
 		file_manager.write(message);
 	}
 

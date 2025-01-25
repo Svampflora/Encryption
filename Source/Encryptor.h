@@ -18,6 +18,7 @@ public:
 	static std::wstring keyword_cipher(std::wstring_view message, const std::wstring_view key_word, const wchar_t key_letter, const bool decrypt = false);
 	static std::wstring vigenere(std::wstring_view message, std::wstring_view keyword, bool decrypt = false);
     static std::wstring rövarspråk(std::wstring_view message, bool decrypt = false) noexcept;
+	static std::wstring hashed_keyword(std::wstring_view message, std::wstring_view keyword, bool decrypt = false);
 
 private:
 	static std::wstring to_low_letters(const std::wstring_view& string);
