@@ -60,8 +60,8 @@ std::wstring nlfsr_pseudo_random(const size_t length, const std::wstring& availa
         throw std::invalid_argument("available_chars must not be empty");
     }
 
-    const uint32_t register_size = 16;
-    const uint32_t feedback_taps = 0b10100100001;
+    constexpr uint32_t register_size = 16;
+    constexpr uint32_t feedback_taps = 0b10100100001;
     NLFSR nlfsr(seed, register_size, feedback_taps);
 
     std::wstring random_string;
