@@ -294,7 +294,26 @@ std::wstring Encryptor::shift_register(std::wstring_view message, std::wstring_v
     return result;
 }
 
+std::wstring Encryptor::vernam_cipher(std::wstring_view message, std::wstring_view keyword, bool decrypt)
+{
+    const std::wstring_view alphabet = ALPHABET_SWE;
+    const unsigned long hash = djb2(keyword.data());
+    std::wstring key = c_pseudo_random(message.length(), alphabet.data(), hash);
+    if (message.size() != key.size()) 
+    {
+        throw std::invalid_argument("Key and message must have the same length.");
+    }
 
+    std::wstring result;
+    result.reserve(message.size());
+
+    for (size_t i = 0; i < message.size(); ++i) 
+    {
+        result += message.at(i) ^ key.at(i);
+    }
+
+    return result;
+}
 
 std::wstring Encryptor::to_low_letters(const std::wstring_view& string_view)
 {

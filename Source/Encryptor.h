@@ -20,6 +20,7 @@ public:
     static std::wstring rövarspråk(std::wstring_view message, bool decrypt = false) noexcept;
 	static std::wstring hashed_keyword(std::wstring_view message, std::wstring_view keyword, bool decrypt = false);
 	static std::wstring shift_register(std::wstring_view message, std::wstring_view keyword, bool decrypt);
+	static std::wstring vernam_cipher(std::wstring_view message, std::wstring_view keyword, bool decrypt);
 
 
 private:
