@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <algorithm>
 #include <random>
+#include "NLFSR.h"
 
 
 wchar_t set_case(wchar_t c, bool upper_case) noexcept
@@ -29,7 +30,7 @@ unsigned long djb2(const wchar_t* str) noexcept //TODO: translate to C++
 }
 
 
-std::wstring generate_pseudo_random(const size_t length, const std::wstring available_chars, unsigned long seed)
+std::wstring c_pseudo_random(const size_t length, const std::wstring available_chars, unsigned long seed)
 {
     if (available_chars.empty()) 
     {
@@ -51,6 +52,29 @@ std::wstring generate_pseudo_random(const size_t length, const std::wstring avai
     return random_string;
 }
 
+std::wstring nlfsr_pseudo_random(const size_t length, const std::wstring& available_chars, const uint32_t seed)
+{
+    const size_t char_count = available_chars.size();
+    if (char_count == 0) 
+    {
+        throw std::invalid_argument("available_chars must not be empty");
+    }
+
+    const uint32_t register_size = 16;
+    const uint32_t feedback_taps = 0b10100100001;
+    NLFSR nlfsr(seed, register_size, feedback_taps);
+
+    std::wstring random_string;
+    random_string.reserve(length);
+    for (size_t i = 0; i < length; ++i) 
+    {
+        const size_t index = nlfsr.next_value(32) % char_count;
+        random_string += available_chars.at(index);
+    }
+
+    return random_string;
+}
+
 std::wstring Encryptor::encrypt(std::wstring message) 
 {
     return cipher(message, false);
@@ -61,7 +85,7 @@ std::wstring Encryptor::decrypt(std::wstring message)
     return cipher(message, true);
 }
 
-void Encryptor::select_cipher(std::function<std::wstring(const std::wstring&, const bool)> _cipher) noexcept
+void Encryptor::select_cipher(std::function<std::wstring(const std::wstring&, const bool)> _cipher) 
 {
     cipher = _cipher;
 }
@@ -254,7 +278,17 @@ std::wstring Encryptor::hashed_keyword(std::wstring_view message, std::wstring_v
 {
     const std::wstring_view alphabet = ALPHABET_SWE;
     const unsigned long hash = djb2(keyword.data());
-    std::wstring filter = generate_pseudo_random(message.length(), alphabet.data(), hash);
+    std::wstring filter = c_pseudo_random(message.length(), alphabet.data(), hash);
+    std::wstring result = vigenere(message, filter, decrypt);
+
+    return result;
+}
+
+std::wstring Encryptor::shift_register(std::wstring_view message, std::wstring_view keyword, bool decrypt)
+{
+    const std::wstring_view alphabet = ALPHABET_SWE;
+    const unsigned long hash = djb2(keyword.data());
+    std::wstring filter = nlfsr_pseudo_random(message.length(), alphabet.data(), hash);
     std::wstring result = vigenere(message, filter, decrypt);
 
     return result;

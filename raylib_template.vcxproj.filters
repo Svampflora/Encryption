@@ -83,5 +83,8 @@
     <ClInclude Include="Source\utf-8.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\NLFSR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
