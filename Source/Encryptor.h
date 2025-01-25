@@ -10,7 +10,7 @@ class Encryptor
 public:
 	std::wstring encrypt(std::wstring message);
 	std::wstring decrypt(std::wstring message);
-	void select_cipher(std::function<std::wstring(const std::wstring&, const bool)> cipher);
+	void select_cipher(std::function<std::wstring(const std::wstring&, const bool)> cipher) noexcept;
 	void draw() const noexcept;
 
 	static std::wstring addative_cipher(std::wstring_view message, int shift, bool decrypt = false);

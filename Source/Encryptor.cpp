@@ -12,6 +12,10 @@ wchar_t set_case(wchar_t c, bool upper_case) noexcept
 
 unsigned long djb2(const wchar_t* str) noexcept //TODO: translate to C++
 {
+    if (!str)
+    {
+        throw;
+    }
     unsigned long hash = 5381;
     int c;
 
@@ -57,7 +61,7 @@ std::wstring Encryptor::decrypt(std::wstring message)
     return cipher(message, true);
 }
 
-void Encryptor::select_cipher(std::function<std::wstring(const std::wstring&, const bool)> _cipher)
+void Encryptor::select_cipher(std::function<std::wstring(const std::wstring&, const bool)> _cipher) noexcept
 {
     cipher = _cipher;
 }

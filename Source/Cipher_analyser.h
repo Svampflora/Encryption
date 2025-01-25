@@ -15,7 +15,7 @@ struct Language
 	std::vector<std::wstring> common_words;
 	std::vector<float> letter_frequency;
 	std::wstring_view alphabet;
-	float index_of_coincidence;
+	float index_of_coincidence = 0.0f;
 
 	std::unordered_map<wchar_t, float> frequency_map()
 	{
@@ -67,13 +67,12 @@ class Cipher_analyser
 public:
 
 	std::wstring monoalphabetic_attack(const std::wstring_view _message, const Language& language);
-	std::wstring known_cipher_attack(const std::wstring_view _message);
 
 private: 
 	std::vector<size_t> sort_indices(const std::vector<float>& frequencies);
 	float letter_frequency(const std::wstring_view& _message, const wchar_t _letter) const noexcept;
 	float index_of_coincidence(const std::wstring_view _message);
-	bool likely_language(const std::wstring_view message, const Language& language);
+	bool likely_language(const std::wstring_view message, const Language& language) const noexcept;
 	bool likely_monoalphabetic(const std::wstring_view message);
 
 

@@ -81,7 +81,7 @@ float Cipher_analyser::index_of_coincidence(const std::wstring_view _message)
 }
 
 
-bool Cipher_analyser::likely_language(const std::wstring_view message, const Language& language)
+bool Cipher_analyser::likely_language(const std::wstring_view message, const Language& language) const noexcept
 {
     //std::transform(message.begin(), message.end(), message.begin(), ::towlower);
 

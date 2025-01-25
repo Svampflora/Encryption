@@ -96,8 +96,8 @@ Encryption::Encryption() : //TODO: throws?
 	menu.add_button(button_4);
 
 	button_area.y += button_height;
-	Button button_5("Rövarspråk", button_area, [this]() noexcept{
-		this->encryptor.select_cipher([](const std::wstring& message, const bool decrypt) {
+	Button button_5("Rövarspråk", button_area, [this]() noexcept {
+		this->encryptor.select_cipher([](const std::wstring& message, const bool decrypt) noexcept {
 			return Encryptor::rövarspråk(message, decrypt);
 			});
 		});
