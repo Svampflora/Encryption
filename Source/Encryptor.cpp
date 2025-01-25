@@ -1,6 +1,7 @@
 #include "Encryptor.h"
 #include <iostream>
 #include <unordered_set>
+#include <valarray>
 #include <algorithm>
 #include <random>
 #include "NLFSR.h"
@@ -313,6 +314,18 @@ std::wstring Encryptor::vernam_cipher(std::wstring_view message, std::wstring_vi
     }
 
     return result;
+}
+
+std::wstring Encryptor::block_cipher(std::wstring_view message, std::wstring_view keyword, bool decrypt)
+{
+    const std::vector<uint8_t> SBox = {
+    0x3, 0x8, 0xF, 0x1,
+    0xA, 0x6, 0x5, 0xB,
+    0x9, 0x0, 0xC, 0x7,
+    0xD, 0xE, 0x4, 0x2
+    };
+
+    return std::wstring();
 }
 
 std::wstring Encryptor::to_low_letters(const std::wstring_view& string_view)
