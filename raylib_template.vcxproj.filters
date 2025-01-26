@@ -86,5 +86,8 @@
     <ClInclude Include="Source\NLFSR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\SBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

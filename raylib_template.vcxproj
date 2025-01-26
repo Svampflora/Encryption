@@ -179,6 +179,7 @@
     <ClInclude Include="Source\Cipher_analyser.h" />
     <ClInclude Include="Source\File_manager.h" />
     <ClInclude Include="Source\NLFSR.h" />
+    <ClInclude Include="Source\SBox.h" />
     <ClInclude Include="Source\Settings.h" />
     <ClInclude Include="Source\Analysis.h" />
     <ClInclude Include="Source\Game.h" />
