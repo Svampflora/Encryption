@@ -13,7 +13,7 @@ wchar_t set_case(wchar_t c, bool upper_case) noexcept
     return upper_case ? static_cast<wchar_t>(std::toupper(c)) : c;
 }
 
-unsigned long djb2(const wchar_t* str) noexcept //TODO: translate to C++
+unsigned long djb2(const wchar_t* str) //TODO: translate to C++
 {
     if (!str)
     {
@@ -298,6 +298,10 @@ std::wstring Encryptor::shift_register(std::wstring_view message, std::wstring_v
 
 std::wstring Encryptor::vernam_cipher(std::wstring_view message, std::wstring_view keyword, bool decrypt)
 {
+    if (decrypt)
+    {
+        decrypt = true; //TODO: make each cipher into class
+    }
     const std::wstring_view alphabet = ALPHABET_SWE;
     const unsigned long hash = djb2(keyword.data());
     std::wstring key = c_pseudo_random(message.length(), alphabet.data(), hash);
@@ -317,13 +321,18 @@ std::wstring Encryptor::vernam_cipher(std::wstring_view message, std::wstring_vi
     return result;
 }
 
-std::wstring Encryptor::block_cipher(std::wstring_view message, std::wstring_view keyword, bool decrypt)
-{
-    const SBox sbox(16);
-    const SBox inverse_sbox = sbox.inverse();
-
-    return std::wstring();
-}
+//std::wstring Encryptor::block_cipher(std::wstring_view message, std::wstring_view keyword, bool decrypt)
+//{
+//    std::wstring result = message.data();
+//    const unsigned long hash = djb2(keyword.data());
+//    SBox sbox(16);
+//    if (decrypt)
+//    {
+//        sbox = sbox.inverse();
+//    }
+//
+//    return std::wstring();
+//}
 
 std::wstring Encryptor::to_low_letters(const std::wstring_view& string_view)
 {

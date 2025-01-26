@@ -25,7 +25,7 @@ public:
     SBox inverse() const
     {
         std::vector<uint8_t> inverse(box.size());
-        for (size_t i = 0; i < box.size(); ++i) 
+        for (uint8_t i = 0; i < box.size(); ++i)
         {
             inverse.at(box.at(i)) = i;
         }
