@@ -8,22 +8,23 @@ class Cipher
 {
 public:
 	virtual std::wstring encrypt(std::wstring_view message, bool decrypt) = 0;
+	virtual ~Cipher() = 0;
 };
 
 class Addative : public Cipher
 {
 	int steps;
 public:
-	Addative(const int _steps) : steps(_steps) {};
-	std::wstring encrypt(std::wstring_view message, bool decrypt);
+	Addative(const int _steps) noexcept : steps(_steps) {};
+	std::wstring encrypt(std::wstring_view message, bool decrypt) override;
 };
 
 class Multiplicative : public Cipher
 {
 	int term;
 public:
-	Multiplicative(const int _term) : term(_term) {};
-	std::wstring encrypt(std::wstring_view message, bool decrypt);
+	Multiplicative(const int _term) noexcept : term(_term) {};
+	std::wstring encrypt(std::wstring_view message, bool decrypt) override;
 };
 
 class Keyword : public Cipher
@@ -31,8 +32,8 @@ class Keyword : public Cipher
 	std::wstring keyword{};
 	wchar_t key_letter;
 public:
-	Keyword(std::wstring_view _keyword) : keyword(_keyword), key_letter(_keyword.front()) {};
-	std::wstring encrypt(std::wstring_view message, bool decrypt);
+	Keyword(std::wstring_view _keyword) noexcept : keyword(_keyword), key_letter(_keyword.front()) {};
+	std::wstring encrypt(std::wstring_view message, bool decrypt) override;
 	void edit(std::wstring_view _keyword);
 };
 
