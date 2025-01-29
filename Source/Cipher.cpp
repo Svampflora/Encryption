@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <random>
 #include "NLFSR.h"
-#include "SBox.h"
 
 
 
@@ -79,10 +78,156 @@ std::wstring Multiplicative::encrypt(std::wstring_view message, bool decrypt)
     return apply_substitution_map(message, substitution_map);
 }
 
+std::wstring Keyword::encrypt(std::wstring_view message, bool decrypt)
+{
+    const std::wstring keyword = to_low_letters(keyword);
+    const std::wstring alphabet = ALPHABET_SWE.data(); //TODO: inject alphabet to class
+    const std::wstring::size_type key_pos = alphabet.find(narrow_cast<wchar_t>(std::tolower(key_letter)));
+    const std::wstring unique_key_word = unique_letters(keyword);
 
+    if (key_pos == std::string::npos)
+    {
+        return L"Invalid key letter!";
+    }
 
+    std::wstring shifted_alphabet = unique_letters(unique_key_word + alphabet);
+    shifted_alphabet = shifted_alphabet.substr(key_pos) + shifted_alphabet.substr(0, key_pos);
 
+    const std::wstring_view source_alphabet = decrypt ? shifted_alphabet : alphabet;
+    const std::wstring_view target_alphabet = decrypt ? alphabet : shifted_alphabet;
+    std::unordered_map<wchar_t, wchar_t> substitution_map;
+    for (size_t i = 0; i < source_alphabet.size(); ++i)
+    {
+        substitution_map[source_alphabet.at(i)] = target_alphabet.at(i);
+    }
 
+    return apply_substitution_map(message, substitution_map);
+}
+
+std::wstring Vigenere::encrypt(std::wstring_view message, bool decrypt)
+{
+    const std::wstring keyword = to_low_letters(keyword);
+    const std::wstring_view alphabet = ALPHABET_SWE;
+    const std::wstring::size_type alphabet_length = alphabet.size();
+    const std::wstring::size_type key_length = keyword.size();
+    std::wstring new_message;
+    rsize_t key_index = 0;
+    bool debug = false;
+    for (const wchar_t ch : message)
+    {
+
+        if (ch == L'a')
+        {
+            debug = true;
+        }
+
+        const wchar_t low_ch = narrow_cast<wchar_t>(std::tolower(ch));
+        if (alphabet.contains(low_ch))
+        {
+            const wchar_t key_char = keyword.at(key_index % key_length);
+            const size_t shift = alphabet.find(key_char);
+            const size_t ch_index = alphabet.find(low_ch);
+
+            const size_t index = (ch_index + (decrypt ? (alphabet_length - shift) : shift)) % alphabet_length;
+            const wchar_t letter = alphabet.at(index);
+
+            new_message += set_case(letter, std::isupper(ch));
+
+            ++key_index;
+        }
+        else
+        {
+            new_message += ch;
+        }
+    }
+
+    return new_message;
+}
+
+std::wstring Rövarspråk::encrypt(std::wstring_view message, bool decrypt) //TODO: separate into two functions
+{
+    std::wstring result;
+    if (decrypt)
+    {
+        for (auto it = message.begin(); it != message.end(); ++it) 
+        {
+            const wchar_t c = *it;
+            result += c;
+
+            if (is_consonant(c))
+            {
+                const auto next_it = std::next(it);
+                const auto next_next_it = std::next(it, 2);
+
+                if (next_it != message.end() && next_next_it != message.end() &&
+                    *next_it == 'o' && *next_next_it == c)
+                {
+                    it = next_next_it;
+                }
+            }
+        }
+        return result;
+    }
+
+    for (const wchar_t c : message)
+    {
+        if (is_consonant(c))
+        {
+            result += c;
+            result += 'o';
+            result += c;
+        }
+        else
+        {
+            result += c;
+        }
+    }
+    return result;
+}
+
+std::wstring Hashed_keyword::encrypt(std::wstring_view message, bool decrypt)
+{
+    const std::wstring_view alphabet = ALPHABET_SWE;
+    const unsigned long hash = djb2(keyword.data());
+    std::wstring filter = c_pseudo_random(message.length(), alphabet.data(), hash);
+    Vigenere vigenere(filter);
+    return vigenere.encrypt(message, decrypt);
+}
+
+std::wstring Shift_register::encrypt(std::wstring_view message, bool decrypt)
+{
+    const std::wstring_view alphabet = ALPHABET_SWE;
+    const unsigned long hash = djb2(keyword.data());
+    std::wstring filter = nlfsr_pseudo_random(message.length(), alphabet.data(), hash);
+    Vigenere vigenere(filter);
+    return vigenere.encrypt(message, decrypt);
+
+}
+
+std::wstring Vernam_cipher::encrypt(std::wstring_view message, bool decrypt)
+{
+    if (decrypt)
+    {
+        decrypt = true;
+    }
+    const std::wstring_view alphabet = ALPHABET_SWE;
+    const unsigned long hash = djb2(keyword.data());
+    std::wstring key = c_pseudo_random(message.length(), alphabet.data(), hash);
+    if (message.size() != key.size())
+    {
+        throw std::invalid_argument("Key and message must have the same length.");
+    }
+
+    std::wstring result;
+    result.reserve(message.size());
+
+    for (size_t i = 0; i < message.size(); ++i)
+    {
+        result += message.at(i) ^ key.at(i);
+    }
+
+    return result;
+}
 
 std::wstring c_pseudo_random(const size_t length, const std::wstring available_chars, unsigned long seed)
 {

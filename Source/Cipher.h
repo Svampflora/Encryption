@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include "Settings.h"
 #include "Utilities.h"
+#include "SBox.h"
+
 
 class Cipher
 {
@@ -29,12 +31,62 @@ public:
 
 class Keyword : public Cipher
 {
-	std::wstring keyword{};
+	std::wstring keyword;
 	wchar_t key_letter;
 public:
 	Keyword(std::wstring_view _keyword) noexcept : keyword(_keyword), key_letter(_keyword.front()) {};
 	std::wstring encrypt(std::wstring_view message, bool decrypt) override;
-	void edit(std::wstring_view _keyword);
+
+};
+
+class Vigenere : public Cipher
+{
+	std::wstring keyword{};
+public:
+	Vigenere(std::wstring_view _keyword) noexcept : keyword(_keyword) {};
+	std::wstring encrypt(std::wstring_view message, bool decrypt) override;
+
+};
+
+class Rövarspråk : public Cipher
+{
+	std::wstring keyword{};
+public:
+	Rövarspråk(std::wstring_view _keyword) noexcept : keyword(_keyword) {};
+	std::wstring encrypt(std::wstring_view message, bool decrypt) override;
+};
+
+class Hashed_keyword : public Cipher
+{
+	std::wstring keyword{};
+public:
+	Hashed_keyword(std::wstring_view _keyword) noexcept : keyword(_keyword) {};
+	std::wstring encrypt(std::wstring_view message, bool decrypt) override;
+};
+
+class Shift_register : public Cipher
+{
+	std::wstring keyword{};
+public:
+	Shift_register(std::wstring_view _keyword) noexcept : keyword(_keyword) {};
+	std::wstring encrypt(std::wstring_view message, bool decrypt) override;
+};
+
+class Vernam_cipher : public Cipher
+{
+	std::wstring keyword{};
+public:
+	Vernam_cipher(std::wstring_view _keyword) noexcept : keyword(_keyword) {};
+	std::wstring encrypt(std::wstring_view message, bool decrypt) override;
+};
+
+class Block_cipher : public Cipher
+{
+	SBox sbox;
+public: 
+	Block_cipher() noexcept : sbox(16) {};
+	std::wstring encrypt(std::wstring_view message, bool decrypt) override;
+
 };
 
 std::wstring c_pseudo_random(const size_t length, const std::wstring available_chars, unsigned long seed);
