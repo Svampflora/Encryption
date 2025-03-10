@@ -78,3 +78,4 @@ private:
 		DrawRectangleRec({ caret_position.x, caret_position.y, mesurements.x, mesurements.y }, PINK);
 	}
 };
+

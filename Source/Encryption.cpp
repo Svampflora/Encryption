@@ -1,5 +1,5 @@
 #include "Encryption.h"
-#include "Analysis.h"
+#include "Edit.h"
 
 
 
@@ -44,7 +44,7 @@ std::unique_ptr<State> Encryption::Update()
 {
 	if (IsKeyReleased(KEY_ENTER))
 	{
-		return std::make_unique<Analysis>();
+		return std::make_unique<Edit>();
 	}
 	
 	menu.update();
@@ -55,11 +55,13 @@ std::unique_ptr<State> Encryption::Update()
 
 Encryption::Encryption() : //TODO: throws?
 	encryptor{},
-	text_box(LoadFont("assets/pixelmix/pixelmix.TTF"), { middle_of_screen().x - GetScreenWidthF() * 0.1f, middle_of_screen().y }, GetScreenHeightF() * 0.05f ),
+	text_box(LoadFont("assets/pixelmix/pixelmix.TTF"), { middle_of_screen().x - screen_width() * 0.1f, middle_of_screen().y }, screen_height() * 0.05f ),
 	menu(LoadFont("assets/pixelmix/pixelmix.TTF")),
 	file_manager("assets/message.txt")
 {
-	const Rectangle menu_area{ GetScreenWidthF() * 0.1f, GetScreenHeightF() * 0.1f, GetScreenWidthF() * 0.2f, GetScreenHeightF() * 0.8f };
+
+
+	const Rectangle menu_area{ screen_width() * 0.1f, screen_height() * 0.1f, screen_width() * 0.2f, screen_height() * 0.8f };
 	const float button_height = menu_area.height / 8;
 	
 	Rectangle button_area{ menu_area.x, menu_area.y, menu_area.width, button_height };

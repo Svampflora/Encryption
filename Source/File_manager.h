@@ -3,7 +3,6 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
-
 #include "utf-8.h"
 
 

@@ -8,12 +8,12 @@
 
 #include <utility>
 
-static inline float GetScreenWidthF() noexcept
+static inline float screen_width() noexcept
 {
 	return static_cast<float>(GetScreenWidth());
 }
 
-static inline float GetScreenHeightF() noexcept
+static inline float screen_height() noexcept
 {
 	return static_cast<float>(GetScreenHeight());
 }
@@ -39,19 +39,21 @@ inline T narrow_cast(U&& u) noexcept
 	return static_cast<T>(std::forward<U>(u));
 }
 
-typedef struct Vector2i {
+typedef struct vec2i {
 	int x;                
 	int y;                
-} Vector2i;
+} vec2i;
 
 inline float half_of(const float& whole) noexcept
 {
 	return whole * 0.5f;
 }
 
-static inline Vector2 middle_of_screen() noexcept
+typedef Vector2 vec2;
+
+static inline vec2 middle_of_screen() noexcept
 {
-	return { half_of(GetScreenWidthF()), half_of(GetScreenHeightF()) };
+	return { half_of(screen_width()), half_of(screen_height()) };
 }
 
 static inline Color transparent_color(const Color& color, const unsigned char& alpha) noexcept
@@ -71,3 +73,4 @@ Iterator wrap_around_iterator(Iterator current, Iterator begin, Iterator end, in
 
 	return begin + wrapped_index;
 }
+

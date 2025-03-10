@@ -2,7 +2,7 @@
 #include "Window.h"
 #include "Startscreen.h"
 #include "Encryption.h"
-#include "Analysis.h"
+#include "Edit.h"
 
 class Game
 {

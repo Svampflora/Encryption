@@ -165,13 +165,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Analysis.cpp" />
+    <ClCompile Include="Source\Edit.cpp" />
     <ClCompile Include="Source\Cipher.cpp" />
     <ClCompile Include="Source\Cipher_analyser.cpp" />
+    <ClCompile Include="Source\Editor.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Encryption.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Encryptor.cpp" />
+    <ClCompile Include="Source\Piece_table.cpp" />
     <ClCompile Include="Source\Startscreen.cpp" />
     <ClCompile Include="Source\utf-8.cpp" />
   </ItemGroup>
@@ -179,11 +181,13 @@
     <ClInclude Include="Source\Button.h" />
     <ClInclude Include="Source\Cipher.h" />
     <ClInclude Include="Source\Cipher_analyser.h" />
+    <ClInclude Include="Source\Editor.h" />
     <ClInclude Include="Source\File_manager.h" />
     <ClInclude Include="Source\NLFSR.h" />
+    <ClInclude Include="Source\Piece_table.h" />
     <ClInclude Include="Source\SBox.h" />
     <ClInclude Include="Source\Settings.h" />
-    <ClInclude Include="Source\Analysis.h" />
+    <ClInclude Include="Source\Edit.h" />
     <ClInclude Include="Source\Game.h" />
     <ClInclude Include="Source\Encryption.h" />
     <ClInclude Include="Source\Startscreen.h" />

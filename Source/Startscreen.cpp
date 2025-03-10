@@ -1,5 +1,6 @@
 #include "Startscreen.h"
-#include "Encryption.h"
+#include "Edit.h"
+
 
 Start_screen::Start_screen() noexcept{}
 
@@ -8,7 +9,7 @@ std::unique_ptr<State> Start_screen::Update()
 {
 	if (IsKeyReleased(KEY_SPACE))
 	{
-		return std::make_unique<Encryption>();
+		return std::make_unique<Edit>();
 	}
 	return nullptr;
 }

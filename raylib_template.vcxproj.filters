@@ -27,7 +27,7 @@
     <ClCompile Include="Source\Encryption.cpp">
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Analysis.cpp">
+    <ClCompile Include="Source\Edit.cpp">
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Startscreen.cpp">
@@ -40,6 +40,12 @@
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Cipher.cpp">
+      <Filter>Resource Files\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor.cpp">
+      <Filter>Resource Files\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Piece_table.cpp">
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,7 +65,7 @@
     <ClInclude Include="Source\Encryption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Analysis.h">
+    <ClInclude Include="Source\Edit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Startscreen.h">
@@ -93,6 +99,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Cipher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Piece_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
