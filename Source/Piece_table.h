@@ -33,6 +33,8 @@ public:
     size_t total_size() const noexcept;
     wchar_t get_char_at(size_t index) const;
     void print();
+    std::wstring get_text_range(size_t start_index, size_t length) const;
+
 
 private:
 
@@ -43,7 +45,7 @@ class Caret
     size_t index;
 
 public:
-    size_t get_index() const 
+    size_t get_index() const noexcept
     {
         return index;
     }

@@ -89,3 +89,34 @@ wchar_t Piece_table::get_char_at(size_t index) const
     return L'\0'; 
 }
 
+std::wstring Piece_table::get_text_range(size_t start_index, size_t length) const
+{
+    std::wstring result;
+    size_t collected = 0;
+    size_t current_index = 0;
+
+    for (const auto& piece : pieces) 
+    {
+        if (current_index + piece.length <= start_index) 
+        {
+            current_index += piece.length;
+            continue;
+        }
+
+        size_t piece_offset = (start_index > current_index) ? (start_index - current_index) : 0;
+        size_t extract_length = std::min(piece.length - piece_offset, length - collected);
+
+        const std::wstring& buffer = piece.is_original ? original_text : add_buffer;
+        result += buffer.substr(piece.start + piece_offset, extract_length);
+
+        collected += extract_length;
+        current_index += piece.length;
+
+        if (collected >= length) 
+        {
+            break; 
+        }
+    }
+
+    return result;
+}
