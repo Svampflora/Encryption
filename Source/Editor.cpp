@@ -1,7 +1,7 @@
 #include "Editor.h"
 
 Editor::Editor() :
-	piece_table(L"new document"),
+	//piece_table(L"new document"),
 	page(),
     caret(),
     text_color{BLACK},
@@ -12,28 +12,31 @@ Editor::Editor() :
 
 void Editor::update()
 {
+    page.update();
 	write();
 }
 
-void Editor::render() const noexcept
+void Editor::render() const 
 {
-	page.draw(piece_table, caret);
+    page.draw();
+    page.draw_settings();
+	//page.draw(piece_table, caret);
 	
 }
 
 void Editor::write()
 {
-    int key = GetCharPressed();
+    const int key = GetCharPressed();
 
     if (key >= 32 && key <= 126) 
     {
-        piece_table.insert(caret.get_index(), std::wstring(1, key), text_color, text_size );
-        caret.move_right(piece_table.get_line_length(caret.get_index()));
+        //piece_table.insert(caret.get_index(), std::wstring(1, key), text_color, text_size );
+        //caret.move_right(piece_table.get_line_length(caret.get_index()));
     }
 
     if (IsKeyPressed(KEY_BACKSPACE))
     {
-        piece_table.remove(caret.get_index());
+        //piece_table.remove(caret.get_index());
     }
 
     if (IsKeyPressed(KEY_LEFT))
@@ -42,15 +45,15 @@ void Editor::write()
     }
     if (IsKeyPressed(KEY_RIGHT))
     {
-        caret.move_right();
+        //caret.move_right();
     }
     if (IsKeyPressed(KEY_UP))
     {
-        caret.move_up();
+        //caret.move_up();
     }
     if (IsKeyPressed(KEY_DOWN))
     {
-        caret.move_down();
+        //caret.move_down();
     }
 
 }

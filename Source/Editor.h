@@ -6,7 +6,7 @@
 
 class Editor
 {
-	Piece_table piece_table;
+	//Piece_table piece_table;
 	Page page;
 	Caret caret;
 	Color text_color;
@@ -15,7 +15,7 @@ class Editor
 public:
 	Editor();
 	void update();
-	void render() const noexcept;
+	void render() const;
 
 private:
 	void write();

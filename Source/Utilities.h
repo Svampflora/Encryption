@@ -49,6 +49,13 @@ inline float half_of(const float& whole) noexcept
 	return whole * 0.5f;
 }
 
+inline float clamp(float value, float min, float max) noexcept
+{
+	if (value < min) return min;
+	if (value > max) return max;
+	return value;
+}
+
 typedef Vector2 vec2;
 
 static inline vec2 middle_of_screen() noexcept
