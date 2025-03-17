@@ -2,7 +2,7 @@
 
 Piece_table::Piece_table(const std::wstring& text) : original_text(text)
 {
-    pieces.push_back({ 0, text.size(), BLACK, 12, true });
+    pieces.push_back({ 0, text.size(), BLACK, 24, true });
 }
 
 //void Piece_table::insert(size_t pos, const std::wstring& new_text, const Color& color, int size)
@@ -39,32 +39,32 @@ Piece_table::Piece_table(const std::wstring& text) : original_text(text)
 //
 //    pieces = std::move(new_pieces);
 //}
-//
-//const std::wstring& Piece_table::get_original_text() const noexcept
-//{
-//    return original_text;
-//}
-//
-//const std::wstring& Piece_table::get_add_buffer() const noexcept
-//{
-//    return add_buffer;
-//}
-//
-//const std::vector<Piece>& Piece_table::get_pieces() const noexcept
-//{
-//    return pieces;
-//}
-//
-//void Piece_table::print()
-//{
-//    for (const auto& piece : pieces)
-//    {
-//        const std::wstring& buffer = add_buffer; piece.is_original ? original_text : add_buffer;
-//        std::wcout << buffer.substr(piece.start, piece.length) << L" ";
-//    }
-//    std::wcout << std::endl;
-//}
-//
+
+const std::wstring& Piece_table::get_original_text() const noexcept
+{
+    return original_text;
+}
+
+const std::wstring& Piece_table::get_add_buffer() const noexcept
+{
+    return add_buffer;
+}
+
+const std::vector<Piece>& Piece_table::get_pieces() const noexcept
+{
+    return pieces;
+}
+
+void Piece_table::print()
+{
+    for (const auto& piece : pieces)
+    {
+        const std::wstring& buffer = add_buffer; piece.is_original ? original_text : add_buffer;
+        std::wcout << buffer.substr(piece.start, piece.length) << L" ";
+    }
+    std::wcout << std::endl;
+}
+
 //size_t Piece_table::total_size() const noexcept
 //{
 //    size_t total = 0;

@@ -100,8 +100,6 @@ namespace Format
 
         return { width, height };
     }
-
-
 }
 
 struct Line_info
@@ -113,7 +111,7 @@ struct Line_info
 class Page
 {
     vec2 format;
-    size_t character_spacing;
+    float character_spacing;
     float zoom;
     float scroll;
     float margin;
@@ -123,75 +121,21 @@ public:
 
     Page() noexcept :
         format{ Format::A(4) },
-        character_spacing{ 1 },
+        character_spacing{ 1.0f },
         zoom{ 0.5f },
         scroll{0.0f},
-        margin{ 20 },
+        margin{ 25.0f },
         line_spacing{ 1.0f }
     {
     }
 
-    //std::vector<Line_info> compute_lines(const Piece_table& piece_table)
-    //{
-    //    std::vector<Line_info> lines;
-    //    float y = margin;
-    //    const float max_width = format.x - margin * 2;
-
-    //    size_t line_start = 0;
-    //    const size_t total_length = piece_table.total_size();
-
-    //    while (line_start < total_length) {
-    //        size_t count = 0;
-    //        float text_width = 0;
-    //        const float current_font_size = piece_table.get_pieces().at(line_start).size;
-
-    //        while (line_start + count < total_length) 
-    //        {
-    //            const Piece& piece = piece_table.get_pieces().at(line_start + count);
-
-    //            if (piece.size != current_font_size) 
-    //            {
-    //                break; 
-    //            }
-
-    //            std::wstring current_text = piece_table.get_text_range(line_start, count + 1);
-    //            text_width = MeasureText(TextFormat("%ls", current_text.c_str()), current_font_size);
-
-    //            if (text_width > max_width) 
-    //            {
-    //                break;
-    //            }
-
-    //            count++;
-    //        }
-
-    //        // Handle explicit newlines
-    //        std::wstring line_text = piece_table.get_text_range(line_start, count);
-    //        size_t newline_pos = line_text.find(L'\n');
-    //        if (newline_pos != std::wstring::npos) {
-    //            count = newline_pos + 1;  // Include newline in the count
-    //        }
-
-    //        lines.push_back({ line_start, y });
-    //        line_start += count;  // Move to the next line
-
-    //        // Determine line height dynamically based on max font size in the current line
-    //        float max_line_height = 0;
-    //        for (size_t i = 0; i < count; i++) {
-    //            max_line_height = std::max(max_line_height, piece_table.get_pieces().at(line_start + i).size * zoom);
-    //        }
-
-    //        y += max_line_height * 1.2f;  // Move down by the tallest font size in the line
-    //    }
-    //}
-
-    //void draw(const Piece_table& piece_table, const Caret& caret) const noexcept
-    //{
-    //    draw_blank_page();
-    //    draw_text(piece_table);
-    //    draw_caret(piece_table, caret);
-    //}
-    void update()
+    void draw(const Piece_table& piece_table/*, const Caret& caret*/) const noexcept
+    {
+        draw_blank_page();
+        draw_text(piece_table);
+        //draw_caret(piece_table, caret);
+    }
+    void update() noexcept
     {
         const float scroll_input = GetMouseWheelMove();
         if (is_hovering())
@@ -199,11 +143,11 @@ public:
             zoom += scroll_input * GetFrameTime();
             zoom = clamp(zoom, 0.1f, 1.0f);
         }
-    }
-
-    void draw() const noexcept
-    {
-        draw_blank_page();
+        else
+        {
+            scroll += scroll_input * GetFrameTime();
+            scroll = clamp(scroll, -0.5f, 0.5f);
+        }
     }
 
     void draw_settings() const
@@ -238,7 +182,8 @@ private:
     {
         const vec2 page_size = size();
         const vec2 screen_center{ half_of(screen_width()), half_of(screen_height()) };
-        return { screen_center.x - half_of(page_size.x), screen_center.y - half_of(page_size.y) };
+        const float scroll_offset = page_size.y * scroll;
+        return { screen_center.x - half_of(page_size.x), screen_center.y - half_of(page_size.y) + scroll_offset };
     }
 
     vec2 size() const noexcept
@@ -247,24 +192,65 @@ private:
         return{ Format::A().x * relative_zoom, Format::A().y * relative_zoom };
     }
 
+    float max_line_width() const noexcept
+    {
+        const float total_width = size().x;
+        return total_width - 2 * margin;
+    }
 
     bool is_hovering() const noexcept
     {
         return CheckCollisionPointRec(GetMousePosition(), rectangle());
     }
 
-    void draw_text(const Piece_table& piece_table) const noexcept
+    void draw_text(const Piece_table& piece_table) const noexcept 
     {
-        const float relative_zoom = zoom * screen_width();
-        vec2 draw_position = { first_line().x * relative_zoom, first_line().y * relative_zoom};
+        vec2 draw_position = first_line();
+        float remaining_width = max_line_width();
+
         for (const auto& piece : piece_table.get_pieces()) 
         {
             const std::wstring& source = piece.is_original ? piece_table.get_original_text() : piece_table.get_add_buffer();
             std::wstring text = source.substr(piece.start, piece.length);
-            DrawTextEx(GetFontDefault(), TextFormat("%ls", text.c_str()), draw_position, piece.size, character_spacing, piece.color);
-            draw_position.y += piece.size + line_spacing;
+
+            while (!text.empty()) 
+            {
+                const vec2 piece_size = MeasureTextEx(GetFontDefault(), TextFormat("%ls", text.c_str()), piece.size * zoom, character_spacing);
+
+                if (piece_size.x > remaining_width) 
+                {
+                    size_t cut_length = text.length();
+                    while (cut_length > 0) 
+                    {
+                        std::wstring candidate = text.substr(0, cut_length);
+                        const vec2 candidate_size = MeasureTextEx(GetFontDefault(), TextFormat("%ls", candidate.c_str()), piece.size * zoom, character_spacing);
+
+                        if (candidate_size.x <= remaining_width) break;
+                        cut_length--;
+                    }
+
+                    std::wstring part_to_draw = text.substr(0, cut_length);
+                    DrawTextEx(GetFontDefault(), TextFormat("%ls", part_to_draw.c_str()), draw_position, piece.size * zoom, character_spacing, piece.color);
+
+                    draw_position.x = first_line().x;
+                    draw_position.y += piece_size.y + line_spacing;
+                    remaining_width = max_line_width();
+
+                    text = text.substr(cut_length);
+                }
+                else 
+                {
+                    DrawTextEx(GetFontDefault(), TextFormat("%ls", text.c_str()), draw_position, piece.size * zoom, character_spacing, piece.color);
+
+                    draw_position.x += piece_size.x;
+                    remaining_width -= piece_size.x;
+
+                    text.clear();
+                }
+            }
         }
     }
+
 
     //void draw_caret(const Piece_table& piece_table, const Caret& caret) const
     //{

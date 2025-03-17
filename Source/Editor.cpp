@@ -1,7 +1,8 @@
 #include "Editor.h"
+#include <string>
 
 Editor::Editor() :
-	//piece_table(L"new document"),
+	piece_table(L"new document"),
 	page(),
     caret(),
     text_color{BLACK},
@@ -12,15 +13,15 @@ Editor::Editor() :
 
 void Editor::update()
 {
+
     page.update();
 	write();
 }
 
 void Editor::render() const 
 {
-    page.draw();
     page.draw_settings();
-	//page.draw(piece_table, caret);
+	page.draw(piece_table);
 	
 }
 
