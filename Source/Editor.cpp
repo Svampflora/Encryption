@@ -21,7 +21,7 @@ void Editor::update()
 void Editor::render() const 
 {
     page.draw_settings();
-	page.draw(piece_table);
+	page.draw(piece_table, caret);
 	
 }
 
@@ -46,7 +46,7 @@ void Editor::write()
     }
     if (IsKeyPressed(KEY_RIGHT))
     {
-        //caret.move_right();
+        caret.move_right();
     }
     if (IsKeyPressed(KEY_UP))
     {

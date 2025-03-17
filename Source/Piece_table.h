@@ -45,14 +45,16 @@ public:
         return index;
     }
 
-    void move_left()
+    void move_left() noexcept
     { 
         if (index > 0) index--;
     }
-    void move_right(size_t line_length) 
+
+    void move_right() noexcept
     { 
-        if (index < line_length) index++;
+        /*if (index < line_length)*/ index++;
     }
+
     //void move_up(const Piece_table& piece_table)
     //{
     //    size_t newIndex = index;
@@ -102,12 +104,6 @@ namespace Format
     }
 }
 
-struct Line_info
-{
-    size_t start, length;
-    vec2 position;
-};
-
 class Page
 {
     vec2 format;
@@ -129,12 +125,12 @@ public:
     {
     }
 
-    void draw(const Piece_table& piece_table/*, const Caret& caret*/) const noexcept
+    void draw(const Piece_table& piece_table, const Caret& caret) const noexcept
     {
         draw_blank_page();
-        draw_text(piece_table);
-        //draw_caret(piece_table, caret);
+        draw_text(piece_table, caret);
     }
+
     void update() noexcept
     {
         const float scroll_input = GetMouseWheelMove();
@@ -203,7 +199,7 @@ private:
         return CheckCollisionPointRec(GetMousePosition(), rectangle());
     }
 
-    void draw_text(const Piece_table& piece_table) const noexcept 
+    /*void draw_text(const Piece_table& piece_table) const noexcept 
     {
         vec2 draw_position = first_line();
         float remaining_width = max_line_width();
@@ -249,43 +245,80 @@ private:
                 }
             }
         }
+    }*/
+
+    void draw_text(const Piece_table& piece_table, const Caret& caret) const noexcept 
+    {
+        vec2 draw_position = first_line();
+        float remaining_width = max_line_width();
+        size_t character_index = 0;
+        vec2 caret_position = draw_position;
+
+        for (const auto& piece : piece_table.get_pieces()) 
+        {
+            const std::wstring& source = piece.is_original ? piece_table.get_original_text() : piece_table.get_add_buffer();
+            std::wstring text = source.substr(piece.start, piece.length);
+
+            while (!text.empty()) 
+            {
+                const vec2 piece_size = MeasureTextEx(GetFontDefault(), TextFormat("%ls", text.c_str()), piece.size * zoom, character_spacing);
+
+                if (piece_size.x > remaining_width) 
+                {
+                    size_t cut_length = text.length();
+                    while (cut_length > 0) 
+                    {
+                        std::wstring candidate = text.substr(0, cut_length);
+                        const vec2 candidate_size = MeasureTextEx(GetFontDefault(), TextFormat("%ls", candidate.c_str()), piece.size * zoom, character_spacing);
+                        if (candidate_size.x <= remaining_width) break;
+                        cut_length--;
+                    }
+
+                    // Todo: magic font
+                    std::wstring part_to_draw = text.substr(0, cut_length);
+                    DrawTextEx(GetFontDefault(), TextFormat("%ls", part_to_draw.c_str()), draw_position, piece.size * zoom, character_spacing, piece.color);
+
+                    // find caret
+                    if (caret.get_index() >= character_index && caret.get_index() < character_index + cut_length) 
+                    {
+                        const vec2 caret_offset = MeasureTextEx(GetFontDefault(), TextFormat("%ls", text.substr(0, caret.get_index() - character_index).c_str()), piece.size * zoom, character_spacing);
+                        caret_position = { draw_position.x + caret_offset.x, draw_position.y };
+                    }
+
+                    //Todo: next_line()
+                    draw_position.x = first_line().x;
+                    draw_position.y += piece_size.y + line_spacing;
+                    remaining_width = max_line_width();
+                    character_index += cut_length;
+                    text = text.substr(cut_length);
+                }
+                else 
+                {
+                    // Todo: magic font
+                    DrawTextEx(GetFontDefault(), TextFormat("%ls", text.c_str()), draw_position, piece.size * zoom, character_spacing, piece.color);
+
+                    if (caret.get_index() >= character_index && caret.get_index() < character_index + text.length()) 
+                    {
+                        const vec2 caret_offset = MeasureTextEx(GetFontDefault(), TextFormat("%ls", text.substr(0, caret.get_index() - character_index).c_str()), piece.size * zoom, character_spacing);
+                        caret_position = { draw_position.x + caret_offset.x, draw_position.y };
+                    }
+
+                    //Todo: next_letter()
+                    draw_position.x += piece_size.x;
+                    remaining_width -= piece_size.x;
+                    character_index += text.length();
+                    text.clear();
+                }
+            }
+        }
+
+        //Todo: move to caret.draw
+        if (caret.blink())
+        {
+            DrawLineV(caret_position, { caret_position.x, caret_position.y + 20.0f }, BLACK);
+
+        }
     }
 
-
-    //void draw_caret(const Piece_table& piece_table, const Caret& caret) const
-    //{
-    //    if (!caret.blink()) return;
-
-    //    const float font_size = 12; // Todo: magic font_size
-
-    //    float x = position.x + 50;  // Todo: magic margin
-    //    float y = position.y + 50;
-
-    //    std::string a = "a"; 
-    //    vec2 mesurements = MeasureTextEx(GetFontDefault(), a.data(), font_size, 1.0f); //Todo: replace magic settings
-    //    mesurements.x *= zoom;
-    //    mesurements.y *= zoom;
-
-    //    size_t current_index = 0;
-    //    for (const auto& piece : piece_table.get_pieces())
-    //    {
-    //        for (const wchar_t c : piece_table.get_add_buffer())
-    //        {
-    //            if (current_index == caret.get_index())
-    //            {
-    //                DrawRectangleRec({ x, y, mesurements.x, mesurements.y }, PINK);
-
-    //                return;
-    //            }
-    //            x += mesurements.x;
-    //            if (c == L'\n')
-    //            {
-    //                x = position.x + 50;
-    //                y += mesurements.y;
-    //            }
-    //            current_index++;
-    //        }
-    //    }
-    //}
 
 };
